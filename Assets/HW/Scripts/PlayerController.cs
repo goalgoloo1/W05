@@ -68,7 +68,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private bool isZooming = false;
 
-    [SerializeField] List<CinemachineCamera> playerCameras; //default camera, zoom in camera.
+
     [SerializeField] GameObject cameraFollowObject; //cameras will follow this obj that is on player gameobject.
     private CharacterController _controller;
     private CharacterInputs _input;
@@ -104,7 +104,7 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        if(isZooming)
+        if(_input.isZooming)
         {
             OnZoomMove();
         }
@@ -126,6 +126,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnZoomMove() //Move Logic When Player Is Zooming in.
     {
+
         float targetSpeed = DefaultMoveSpeed;
         if (_input.move == Vector2.zero) targetSpeed = 0.0f; 
     }
