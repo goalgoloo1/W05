@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -121,15 +122,21 @@ public class PlayerController : MonoBehaviour
 
     private void CameraRotation()
     {
+        if(_input.isZooming)
+        {
+            float rotateY = _input.look.x;
+            transform.Rotate(0f, rotateY, 0f);
+
+            float rotateX = _input.look.y;
+            cameraFollowObject.transform.Rotate(-rotateX, 0f, 0f);
+        }
 
     }
 
-    private void OnZoomMove() //Move Logic When Player Is Zooming in.
-    {
-
-        float targetSpeed = DefaultMoveSpeed;
-        if (_input.move == Vector2.zero) targetSpeed = 0.0f; 
-    }
+private void OnZoomMove() // Move Logic When Player Is Zooming in.
+{
+    
+}
 
     private void DefaultMove() //Move Logic When Player is not zooming in.
     {

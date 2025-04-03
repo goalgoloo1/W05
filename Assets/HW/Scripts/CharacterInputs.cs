@@ -10,7 +10,8 @@ public class CharacterInputs : MonoBehaviour
 {
     [Header("Get Component")]
     [SerializeField] PlayerInput playerInput;
-    [SerializeField] List<CinemachineCamera> playerCameras; //default camera, zoom in camera.
+    [SerializeField] CinemachineCamera defaultCamera;
+    [SerializeField] CinemachineCamera zoomInCamera;
 
     [Header("Character Input Values")]
     public Vector2 move;
@@ -50,8 +51,8 @@ public class CharacterInputs : MonoBehaviour
             playerInput.SwitchCurrentActionMap("Zoomed In Player Move");
 
             //CameraChange
-            playerCameras[1].Priority = 10;
-            playerCameras[0].Priority = 0;
+            zoomInCamera.Priority = 10;
+            defaultCamera.Priority = 0;
         }
         else
         {
@@ -59,8 +60,8 @@ public class CharacterInputs : MonoBehaviour
             playerInput.SwitchCurrentActionMap("Default Player Move");
 
             //CameraChange
-            playerCameras[0].Priority = 10;
-            playerCameras[1].Priority = 0;
+            defaultCamera.Priority = 10;
+            zoomInCamera.Priority = 0;
         }
     }
 
