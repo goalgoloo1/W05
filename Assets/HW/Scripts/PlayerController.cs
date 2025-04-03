@@ -123,19 +123,19 @@ public class PlayerController : MonoBehaviour
     private float currentXRotation = 0f;
     private float currentYRotation = 0f;
     public float maxXAngle = 50f;
-    private bool wasZoomingLastFrame = false; // ÁÜ »óÅÂ ÃßÀû
+    private bool wasZoomingLastFrame = false; // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     private void CameraRotation()
     {
         if(_input.isZooming)
         {
-            // ÇÃ·¹ÀÌ¾îÀÇ ÃÊ±â YÃà ¹æÇâÀ¸·Î Ä«¸Þ¶ó ¸ÂÃã
+            // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½ Yï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½
             currentYRotation = transform.eulerAngles.y;
-            //currentXRotation = 0f; // Tilt ÃÊ±âÈ­ (ÇÊ¿ä ½Ã Á¶Á¤)
+            //currentXRotation = 0f; // Tilt ï¿½Ê±ï¿½È­ (ï¿½Ê¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
             //cameraFollowObject.transform.rotation = Quaternion.Euler(cameraFollowObject.transform.eulerAngles.x, currentYRotation, 0f);
 
 
-            // Pan/Tilt ÀÔ·Â Àû¿ë
+            // Pan/Tilt ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½
             float rotateY = _input.look.x;
             float rotateX = _input.look.y;
 
@@ -143,13 +143,13 @@ public class PlayerController : MonoBehaviour
             currentXRotation -= rotateX;
             currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
 
-            // cameraFollowObject¸¸ È¸Àü, ÇÃ·¹ÀÌ¾î È¸Àü°ú µ¶¸³
+            // cameraFollowObjectï¿½ï¿½ È¸ï¿½ï¿½, ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
 
-            // cameraFollowObjectÀÇ ¿ùµå È¸Àü¿¡¼­ YÃà °ª¸¸ °¡Á®¿È
+            // cameraFollowObjectï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Yï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             float cameraYRotation = cameraFollowObject.transform.eulerAngles.y;
 
-            // ÇÃ·¹ÀÌ¾îÀÇ ÇöÀç È¸Àü¿¡¼­ YÃà¸¸ ¾÷µ¥ÀÌÆ®
+            // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Yï¿½à¸¸ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
             Vector3 playerRotation = transform.eulerAngles;
             playerRotation.y = cameraYRotation;
             transform.eulerAngles = playerRotation;
@@ -163,8 +163,8 @@ public class PlayerController : MonoBehaviour
             currentXRotation -= rotateX;
             currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
 
-            // cameraFollowObject¸¸ È¸Àü, ÇÃ·¹ÀÌ¾î È¸Àü°ú µ¶¸³
-            cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
+            // cameraFollowObjectï¿½ï¿½ È¸ï¿½ï¿½, ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            //cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
         }
 
     }
