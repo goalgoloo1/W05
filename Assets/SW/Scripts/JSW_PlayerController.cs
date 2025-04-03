@@ -28,7 +28,7 @@ public class JSW_PlayerController : MonoBehaviour
     public float JumpHeight = 1.2f;
 
     [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
-    public float Gravity = -15.0f;
+    public float Gravity = -30.0f;
 
     [Space(10)]
     [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
@@ -51,6 +51,10 @@ public class JSW_PlayerController : MonoBehaviour
     public LayerMask GroundLayers;
 
     public bool isStop;
+
+    public CinemachineImpulseSource _impulseSource;
+
+    public CinemachineShake cinemachineShake;
 
     //[Header("Cinemachine")]
     //[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
@@ -89,6 +93,8 @@ public class JSW_PlayerController : MonoBehaviour
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
+
+
     private void Start()
     {
         _controller = GetComponent<CharacterController>();
@@ -102,6 +108,13 @@ public class JSW_PlayerController : MonoBehaviour
         JumpAndGravity();
         //GroundedCheck();
         if (!isStop) Move();
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            print("Q ´©¸§ Èçµé¸²");
+            cinemachineShake.ShakeCamera(0.5f, 10f);
+        }
+
     }
 
     private void Move()

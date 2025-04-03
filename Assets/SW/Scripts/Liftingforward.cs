@@ -1,20 +1,27 @@
 using UnityEngine;
 using System.Collections;
+using Unity.Cinemachine;
 
 public class Liftingforward : MonoBehaviour
 {
 
     private GameObject _player;
     private Transform[] _targetPos;
+    private CinemachineImpulseSource _impulseSource;
 
     private void Start()
     {
+        Init();
+    }
+
+    void Init()
+    {
         _targetPos = new Transform[2];
-        //cinemachineCamera = GetComponentInChildren<CinemachineCamera>().gameObject;
         for (int i = 0; i < 2; i++)
         {
             _targetPos[i] = transform.GetChild(i);
         }
+        _impulseSource = GetComponent<CinemachineImpulseSource>();
     }
 
     // 플레이어가 가까이와서 줄에 걸렸을 때
@@ -30,10 +37,10 @@ public class Liftingforward : MonoBehaviour
     // 플레이어를 정해진 위치로 올려주는 코루틴
     IEnumerator PlayerUp_CO()
     {
-        float initGravity = _player.GetComponent<PlayerController>().Gravity;
+        float initGravity = _player.GetComponent<JSW_PlayerController>().Gravity;
 
-        _player.GetComponent<PlayerController>().Gravity = 0;
-        _player.GetComponent<PlayerController>().isStop = true;
+        _player.GetComponent<JSW_PlayerController>().Gravity = 0;
+        _player.GetComponent<JSW_PlayerController>().isStop = true;
         // 플레이어 움직임 막기
 
         // 3의 위치로 이동 시키기
@@ -54,17 +61,20 @@ public class Liftingforward : MonoBehaviour
 
         Vector3 target2Dir = (_targetPos[1].position - _targetPos[0].position).normalized;
 
+        _impulseSource.GenerateImpulse();
+
         while (true)
         {
             _player.transform.position += target2Dir * Time.deltaTime * 10;
             if (_targetPos[1].position.z - _player.transform.position.z > 0.1)
             {
+                _impulseSource.GenerateImpulse();
                 break;
             }
             yield return null;
         }
 
-        _player.GetComponent<PlayerController>().Gravity = initGravity;
-        _player.GetComponent<PlayerController>().isStop = false;
+        _player.GetComponent<JSW_PlayerController>().Gravity = initGravity;
+        _player.GetComponent<JSW_PlayerController>().isStop = false;
     }
 }
