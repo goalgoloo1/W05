@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Zoom",
+                    "type": "Button",
+                    "id": "9a1af2a4-9a30-4dc6-9e9b-9869aa77ae55",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -107,9 +116,31 @@
                     "id": "a0ac84f7-0b68-4e6b-a414-17281156b9e5",
                     "path": "<Mouse>/delta",
                     "interactions": "",
-                    "processors": "NormalizeVector2,ScaleVector2(x=2,y=2)",
+                    "processors": "NormalizeVector2,ScaleVector2(y=2)",
                     "groups": ";Keyboard&Mouse",
                     "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "597799fd-7c16-4c37-82f3-af8c2c6870a6",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "70d30e1d-1ae1-4324-8dc7-ddd2b68fe2f7",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Zoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -135,6 +166,15 @@
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Zoom",
+                    "type": "Button",
+                    "id": "70b84994-b6e2-475c-9629-df631a443cf1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press(behavior=1)",
                     "initialStateCheck": true
                 }
             ],
@@ -219,11 +259,33 @@
                 {
                     "name": "",
                     "id": "e0ae5fd7-9196-42f0-b23b-cdf903f9bcb1",
-                    "path": "<Mouse>/position",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "NormalizeVector2,ScaleVector2",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "15d4ddc5-b845-41b9-8717-cb0ff7a2f268",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5480f2de-8aca-4c3d-ae78-065ce2554ce8",
+                    "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Look",
+                    "action": "Zoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

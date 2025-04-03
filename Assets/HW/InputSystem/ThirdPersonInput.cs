@@ -108,6 +108,15 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""Button"",
+                    ""id"": ""9a1af2a4-9a30-4dc6-9e9b-9869aa77ae55"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=2)"",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -193,9 +202,31 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""id"": ""a0ac84f7-0b68-4e6b-a414-17281156b9e5"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
-                    ""processors"": ""NormalizeVector2,ScaleVector2(x=2,y=2)"",
+                    ""processors"": ""NormalizeVector2,ScaleVector2(y=2)"",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""597799fd-7c16-4c37-82f3-af8c2c6870a6"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""70d30e1d-1ae1-4324-8dc7-ddd2b68fe2f7"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -221,6 +252,15 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""Button"",
+                    ""id"": ""70b84994-b6e2-475c-9629-df631a443cf1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=1)"",
                     ""initialStateCheck"": true
                 }
             ],
@@ -305,11 +345,33 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""e0ae5fd7-9196-42f0-b23b-cdf903f9bcb1"",
-                    ""path"": ""<Mouse>/position"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": ""NormalizeVector2,ScaleVector2"",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""15d4ddc5-b845-41b9-8717-cb0ff7a2f268"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5480f2de-8aca-4c3d-ae78-065ce2554ce8"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Look"",
+                    ""action"": ""Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -350,10 +412,12 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         m_DefaultPlayerMove = asset.FindActionMap("Default Player Move", throwIfNotFound: true);
         m_DefaultPlayerMove_Move = m_DefaultPlayerMove.FindAction("Move", throwIfNotFound: true);
         m_DefaultPlayerMove_Look = m_DefaultPlayerMove.FindAction("Look", throwIfNotFound: true);
+        m_DefaultPlayerMove_Zoom = m_DefaultPlayerMove.FindAction("Zoom", throwIfNotFound: true);
         // Zoomed In Player Move
         m_ZoomedInPlayerMove = asset.FindActionMap("Zoomed In Player Move", throwIfNotFound: true);
         m_ZoomedInPlayerMove_Move = m_ZoomedInPlayerMove.FindAction("Move", throwIfNotFound: true);
         m_ZoomedInPlayerMove_Look = m_ZoomedInPlayerMove.FindAction("Look", throwIfNotFound: true);
+        m_ZoomedInPlayerMove_Zoom = m_ZoomedInPlayerMove.FindAction("Zoom", throwIfNotFound: true);
     }
 
     ~@ThirdPersonInput()
@@ -437,6 +501,7 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
     private List<IDefaultPlayerMoveActions> m_DefaultPlayerMoveActionsCallbackInterfaces = new List<IDefaultPlayerMoveActions>();
     private readonly InputAction m_DefaultPlayerMove_Move;
     private readonly InputAction m_DefaultPlayerMove_Look;
+    private readonly InputAction m_DefaultPlayerMove_Zoom;
     /// <summary>
     /// Provides access to input actions defined in input action map "Default Player Move".
     /// </summary>
@@ -456,6 +521,10 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "DefaultPlayerMove/Look".
         /// </summary>
         public InputAction @Look => m_Wrapper.m_DefaultPlayerMove_Look;
+        /// <summary>
+        /// Provides access to the underlying input action "DefaultPlayerMove/Zoom".
+        /// </summary>
+        public InputAction @Zoom => m_Wrapper.m_DefaultPlayerMove_Zoom;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -488,6 +557,9 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @Zoom.started += instance.OnZoom;
+            @Zoom.performed += instance.OnZoom;
+            @Zoom.canceled += instance.OnZoom;
         }
 
         /// <summary>
@@ -505,6 +577,9 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @Zoom.started -= instance.OnZoom;
+            @Zoom.performed -= instance.OnZoom;
+            @Zoom.canceled -= instance.OnZoom;
         }
 
         /// <summary>
@@ -544,6 +619,7 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
     private List<IZoomedInPlayerMoveActions> m_ZoomedInPlayerMoveActionsCallbackInterfaces = new List<IZoomedInPlayerMoveActions>();
     private readonly InputAction m_ZoomedInPlayerMove_Move;
     private readonly InputAction m_ZoomedInPlayerMove_Look;
+    private readonly InputAction m_ZoomedInPlayerMove_Zoom;
     /// <summary>
     /// Provides access to input actions defined in input action map "Zoomed In Player Move".
     /// </summary>
@@ -563,6 +639,10 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "ZoomedInPlayerMove/Look".
         /// </summary>
         public InputAction @Look => m_Wrapper.m_ZoomedInPlayerMove_Look;
+        /// <summary>
+        /// Provides access to the underlying input action "ZoomedInPlayerMove/Zoom".
+        /// </summary>
+        public InputAction @Zoom => m_Wrapper.m_ZoomedInPlayerMove_Zoom;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -595,6 +675,9 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @Zoom.started += instance.OnZoom;
+            @Zoom.performed += instance.OnZoom;
+            @Zoom.canceled += instance.OnZoom;
         }
 
         /// <summary>
@@ -612,6 +695,9 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @Zoom.started -= instance.OnZoom;
+            @Zoom.performed -= instance.OnZoom;
+            @Zoom.canceled -= instance.OnZoom;
         }
 
         /// <summary>
@@ -692,6 +778,13 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLook(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Zoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnZoom(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Zoomed In Player Move" which allows adding and removing callbacks.
@@ -714,5 +807,12 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLook(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Zoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnZoom(InputAction.CallbackContext context);
     }
 }
