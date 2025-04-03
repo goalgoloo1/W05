@@ -28,7 +28,7 @@ public class JSW_PlayerController : MonoBehaviour
     public float JumpHeight = 1.2f;
 
     [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
-    public float Gravity = -30.0f;
+    public float Gravity = -15.0f;
 
     [Space(10)]
     [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
@@ -50,12 +50,6 @@ public class JSW_PlayerController : MonoBehaviour
     [Tooltip("What layers the character uses as ground")]
     public LayerMask GroundLayers;
 
-    public bool isStop;
-
-    public CinemachineImpulseSource _impulseSource;
-
-    public CinemachineShake cinemachineShake;
-
     //[Header("Cinemachine")]
     //[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
     //public GameObject CinemachineCameraTarget;
@@ -74,7 +68,7 @@ public class JSW_PlayerController : MonoBehaviour
 
     [SerializeField] private bool isZooming = false;
 
-    [SerializeField] List<CinemachineCamera> playerCameras; //default camera, zoom in camera.
+
     [SerializeField] GameObject cameraFollowObject; //cameras will follow this obj that is on player gameobject.
     private CharacterController _controller;
     private CharacterInputs _input;
@@ -94,6 +88,12 @@ public class JSW_PlayerController : MonoBehaviour
     private float _fallTimeoutDelta;
 
 
+    public bool isStop;
+
+    public CinemachineImpulseSource _impulseSource;
+
+    public CinemachineShake cinemachineShake;
+
 
     private void Start()
     {
@@ -106,7 +106,6 @@ public class JSW_PlayerController : MonoBehaviour
     private void Update()
     {
         JumpAndGravity();
-        //GroundedCheck();
         if (!isStop) Move();
 
         if (Input.GetKeyDown(KeyCode.Q))
@@ -114,12 +113,11 @@ public class JSW_PlayerController : MonoBehaviour
             print("Q 누름 흔들림");
             cinemachineShake.ShakeCamera(0.5f, 10f);
         }
-
     }
 
     private void Move()
     {
-        if (isZooming)
+        if (_input.isZooming)
         {
             OnZoomMove();
         }
@@ -134,46 +132,73 @@ public class JSW_PlayerController : MonoBehaviour
         CameraRotation();
     }
 
+    private float currentXRotation = 0f;
+    private float currentYRotation = 0f;
+    public float maxXAngle = 50f;
+    private bool wasZoomingLastFrame = false; // 줌 상태 추적
+
     private void CameraRotation()
     {
+        if (_input.isZooming)
+        {
+            // 플레이어의 초기 Y축 방향으로 카메라 맞춤
+            currentYRotation = transform.eulerAngles.y;
+            //currentXRotation = 0f; // Tilt 초기화 (필요 시 조정)
+            //cameraFollowObject.transform.rotation = Quaternion.Euler(cameraFollowObject.transform.eulerAngles.x, currentYRotation, 0f);
+
+
+            // Pan/Tilt 입력 적용
+            float rotateY = _input.look.x;
+            float rotateX = _input.look.y;
+
+            currentYRotation += rotateY;
+            currentXRotation -= rotateX;
+            currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
+
+            // cameraFollowObject만 회전, 플레이어 회전과 독립
+            cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
+
+            // cameraFollowObject의 월드 회전에서 Y축 값만 가져옴
+            float cameraYRotation = cameraFollowObject.transform.eulerAngles.y;
+
+            // 플레이어의 현재 회전에서 Y축만 업데이트
+            Vector3 playerRotation = transform.eulerAngles;
+            playerRotation.y = cameraYRotation;
+            transform.eulerAngles = playerRotation;
+        }
+        else
+        {
+            float rotateY = _input.look.x;
+            float rotateX = _input.look.y;
+
+            currentYRotation += rotateY;
+            currentXRotation -= rotateX;
+            currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
+
+            // cameraFollowObject만 회전, 플레이어 회전과 독립
+            cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
+        }
 
     }
 
-    private void OnZoomMove() //Move Logic When Player Is Zooming in.
+    private void OnZoomMove() // Move Logic When Player Is Zooming in.
     {
-        float targetSpeed = DefaultMoveSpeed;
-        if (_input.move == Vector2.zero) targetSpeed = 0.0f;
-    }
-
-    private void DefaultMove() //Move Logic When Player is not zooming in.
-    {
-        // set target speed based on move speed, sprint speed and if sprint is pressed
-        //float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
         float targetSpeed = ZoomedInMoveSpeed;
 
-        // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
-
-        // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-        // if there is no input, set the target speed to 0
         if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
-        // a reference to the players current horizontal velocity
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
         float speedOffset = 0.1f;
         //float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
         float inputMagnitude = _input.move.magnitude;
 
-        // accelerate or decelerate to target speed
         if (currentHorizontalSpeed < targetSpeed - speedOffset ||
             currentHorizontalSpeed > targetSpeed + speedOffset)
         {
-            // creates curved result rather than a linear one giving a more organic speed change
-            // note T in Lerp is clamped, so we don't need to clamp our speed
             _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
                 Time.deltaTime * SpeedChangeRate);
 
-            // round speed to 3 decimal places
             _speed = Mathf.Round(_speed * 1000f) / 1000f;
         }
         else
@@ -187,8 +212,55 @@ public class JSW_PlayerController : MonoBehaviour
         // normalise input direction
         Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
-        // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-        // if there is a move input rotate player when the player is moving
+        if (_input.move != Vector2.zero)
+        {
+            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                              _mainCamera.transform.eulerAngles.y;
+            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+                RotationSmoothTime);
+
+            // rotate to face input direction relative to camera position
+            //transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+        }
+
+
+        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+
+        // move the player
+        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
+                         new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+    }
+    private void DefaultMove() //Move Logic When Player is not zooming in.
+    {
+        float targetSpeed = DefaultMoveSpeed;
+
+        if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+
+        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+
+        float speedOffset = 0.1f;
+        //float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+        float inputMagnitude = _input.move.magnitude;
+
+        if (currentHorizontalSpeed < targetSpeed - speedOffset ||
+            currentHorizontalSpeed > targetSpeed + speedOffset)
+        {
+            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+                Time.deltaTime * SpeedChangeRate);
+
+            _speed = Mathf.Round(_speed * 1000f) / 1000f;
+        }
+        else
+        {
+            _speed = targetSpeed;
+        }
+
+        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+        if (_animationBlend < 0.01f) _animationBlend = 0f;
+
+        // normalise input direction
+        Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
         if (_input.move != Vector2.zero)
         {
             _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
@@ -207,12 +279,6 @@ public class JSW_PlayerController : MonoBehaviour
         _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
                          new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-        //// update animator if using character
-        //if (_hasAnimator)
-        //{
-        //    _animator.SetFloat(_animIDSpeed, _animationBlend);
-        //    _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-        //}
     }
 
     private void JumpAndGravity()

@@ -68,7 +68,7 @@ public class LiftingUp : MonoBehaviour
 
         while (true)
         {
-            _player.transform.position += target2Dir * Time.deltaTime * 5;
+            _player.transform.position += target2Dir * Time.deltaTime * 2;
             if (_targetPos[1].position.y - _player.transform.position.y < 0.1)
             {
                 _impulseSource.GenerateImpulse();

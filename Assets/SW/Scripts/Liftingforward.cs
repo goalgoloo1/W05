@@ -38,7 +38,7 @@ public class Liftingforward : MonoBehaviour
     IEnumerator PlayerUp_CO()
     {
         float initGravity = _player.GetComponent<JSW_PlayerController>().Gravity;
-
+        _player.transform.forward = Vector3.back;
         _player.GetComponent<JSW_PlayerController>().Gravity = 0;
         _player.GetComponent<JSW_PlayerController>().isStop = true;
         // 플레이어 움직임 막기
