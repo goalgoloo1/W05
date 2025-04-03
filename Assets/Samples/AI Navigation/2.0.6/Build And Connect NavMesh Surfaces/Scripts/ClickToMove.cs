@@ -11,10 +11,12 @@ namespace Unity.AI.Navigation.Samples
     {
         NavMeshAgent m_Agent;
         RaycastHit m_HitInfo = new RaycastHit();
-    
+        Animator m_Animator;
+
         void Start()
         {
             m_Agent = GetComponent<NavMeshAgent>();
+            m_Animator = GetComponent<Animator>();
         }
     
         void Update()
@@ -25,6 +27,22 @@ namespace Unity.AI.Navigation.Samples
                 if (Physics.Raycast(ray.origin, ray.direction, out m_HitInfo))
                     m_Agent.destination = m_HitInfo.point;
             }
+            if(m_Agent.velocity.magnitude != 0f)
+            {
+                m_Animator.SetBool("Running", true);
+            }
+            else
+            {
+                m_Animator.SetBool("Running", false);
+            }
         }
+        private void OnAnimatorMove()
+        {
+            if(m_Animator.GetBool("Running"))
+            {
+                m_Agent.speed = (m_Animator.deltaPosition / Time.deltaTime).magnitude; ;
+            }
+        }
+
     }
 }
