@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.Rendering.DebugUI;
 
 /// <summary>
 /// Handle Input.
@@ -65,6 +66,16 @@ public class CharacterInputs : MonoBehaviour
         }
     }
 
+    public void OnJump(InputValue value) //Default Action map -> Jump.
+    {
+        JumpInput(value.isPressed);
+    }
+
+    public void OnEvade(InputValue value) //Zoomed In Action Map -> Evade.
+    {
+
+    }
+
 #endif
 
     public void MoveInput(Vector2 newMoveDirection)
@@ -75,6 +86,11 @@ public class CharacterInputs : MonoBehaviour
     public void LookInput(Vector2 newLookDirection)
     {
         look = newLookDirection;
+    }
+
+    public void JumpInput(bool newJumpState)
+    {
+        jump = newJumpState;
     }
 
     private void OnApplicationFocus(bool hasFocus)
