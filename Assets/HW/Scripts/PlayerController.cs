@@ -51,6 +51,16 @@ public class PlayerController : MonoBehaviour
     [Tooltip("What layers the character uses as ground")]
     public LayerMask GroundLayers;
 
+    [Space(10)]
+    [Tooltip("The slight height the player lifts during evade (minimal for side movement)")]
+    public float EvadeLift = 0.2f; // 최소한의 수직 리프트 (옆으로 가는 느낌 강조)
+    [Tooltip("The height the player can evade in zoom mode")]
+    public float EvadeHeight = 2.0f; // Evade용 더 높은 점프 높이
+    [Tooltip("The distance the player moves forward during evade")]
+    public float EvadeDistance = 4.0f; // Evade 수평 이동 거리
+    [Tooltip("Time required to pass before being able to evade again")]
+    public float EvadeTimeout = 1.0f; // Evade 쿨다운
+
     //[Header("Cinemachine")]
     //[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
     //public GameObject CinemachineCameraTarget;
@@ -67,7 +77,7 @@ public class PlayerController : MonoBehaviour
     //[Tooltip("For locking the camera position on all axis")]
     //public bool LockCameraPosition = false;
 
-    [SerializeField] private bool isZooming = false;
+    //[SerializeField] private bool isZooming = false;
 
 
     [SerializeField] GameObject cameraFollowObject; //cameras will follow this obj that is on player gameobject.
@@ -84,23 +94,36 @@ public class PlayerController : MonoBehaviour
     private float _rotationVelocity;
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
+    private float _evadeTimeRemaining; // Evade 동작 남은 시간
+    private Vector3 _evadeDirection; // Evade 방향 저장
+    private bool _isEvading; // Evade 중인지 추적
 
     // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
+    private float _evadeTimeoutDelta; // Evade 쿨다운 타이머
+
 
     // animation IDs
-    private int _animIDSpeed;
+    //private int _animIDSpeed;
     private int _animIDGrounded;
     private int _animIDJump;
     private int _animIDFreeFall;
-    private int _animIDMotionSpeed;
+    private int _animIDZoom;
+    private int _animIDMove;
+    private int _animIDFrontMove;
+    private int _animIDBackMove;
+    private int _animIDSideMove;
+    private int _animIDEvade;
+    //private int _animIDRightMove;
+    //private int _animIDLeftMove;
+    //private int _animIDMotionSpeed;
 
     //Cameras
     private float currentXRotation = 0f;
     private float currentYRotation = 0f;
     public float maxXAngle = 50f;
-    private bool wasZoomingLastFrame = false; // 줌 상태 추적
+    //private bool wasZoomingLastFrame = false; // 줌 상태 추적
 
     private const float _threshold = 0.01f;
 
@@ -119,14 +142,20 @@ public class PlayerController : MonoBehaviour
         // reset our timeouts on start
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
+        _evadeTimeoutDelta = EvadeTimeout; // Evade 쿨다운 초기화
     }
 
     private void AssignAnimationIDs()
     {
         //_animIDSpeed = Animator.StringToHash("Speed");
         _animIDGrounded = Animator.StringToHash("Grounded");
-        //_animIDJump = Animator.StringToHash("Jump");
-        //_animIDFreeFall = Animator.StringToHash("FreeFall");
+        _animIDBackMove = Animator.StringToHash("BackMove");
+        _animIDEvade = Animator.StringToHash("Evade");
+        _animIDSideMove = Animator.StringToHash("SideMove");
+        _animIDMove = Animator.StringToHash("Move");
+        _animIDJump = Animator.StringToHash("Jump");
+        _animIDZoom = Animator.StringToHash("Zoom");
+        _animIDFreeFall = Animator.StringToHash("FreeFall");
         //_animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
     }
 
@@ -141,10 +170,14 @@ public class PlayerController : MonoBehaviour
     {
         if(_input.isZooming)
         {
+            _animator.SetBool(_animIDZoom, true);
+
             OnZoomMove();
         }
         else
         {
+            _animator.SetBool(_animIDZoom, false);
+
             DefaultMove();
         }
     }
@@ -200,24 +233,19 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private void OnZoomMove() // Move Logic When Player Is Zooming in.
+    private void OnZoomMove()
     {
         float targetSpeed = ZoomedInMoveSpeed;
 
         if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
         float speedOffset = 0.1f;
-        //float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
         float inputMagnitude = _input.move.magnitude;
 
-        if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-            currentHorizontalSpeed > targetSpeed + speedOffset)
+        if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
         {
-            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                Time.deltaTime * SpeedChangeRate);
-
+            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
             _speed = Mathf.Round(_speed * 1000f) / 1000f;
         }
         else
@@ -225,29 +253,54 @@ public class PlayerController : MonoBehaviour
             _speed = targetSpeed;
         }
 
-        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-        if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-        // normalise input direction
         Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
         if (_input.move != Vector2.zero)
         {
-            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                              _mainCamera.transform.eulerAngles.y;
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                RotationSmoothTime);
-
-            // rotate to face input direction relative to camera position
-            //transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
         }
 
+        if (!_isEvading) // Evade 중이 아닐 때만 일반 이동
+        {
+            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+        }
 
-        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+        // Zoom 상태 애니메이션
+        if (_hasAnimator && _input.move != Vector2.zero && !_isEvading)
+        {
+            Vector3 moveDirection = targetDirection.normalized;
+            Vector3 cameraForward = _mainCamera.transform.forward;
+            cameraForward.y = 0;
+            cameraForward = cameraForward.normalized;
 
-        // move the player
-        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                         new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+            float angle = Vector3.SignedAngle(cameraForward, moveDirection, Vector3.up);
+
+            if (angle >= -45f && angle <= 45f)
+            {
+                _animator.SetBool(_animIDMove, true);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDSideMove, false);
+            }
+            else if (angle >= 135f || angle <= -135f)
+            {
+                _animator.SetBool(_animIDMove, false);
+                _animator.SetBool(_animIDBackMove, true);
+                _animator.SetBool(_animIDSideMove, false);
+            }
+            else
+            {
+                _animator.SetBool(_animIDMove, false);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDSideMove, true);
+            }
+        }
+        else if (_hasAnimator && !_isEvading)
+        {
+            _animator.SetBool(_animIDMove, false);
+            _animator.SetBool(_animIDBackMove, false);
+            _animator.SetBool(_animIDSideMove, false);
+        }
     }
     private void DefaultMove() //Move Logic When Player is not zooming in.
     {
@@ -256,17 +309,12 @@ public class PlayerController : MonoBehaviour
         if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
         float speedOffset = 0.1f;
-        //float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
         float inputMagnitude = _input.move.magnitude;
 
-        if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-            currentHorizontalSpeed > targetSpeed + speedOffset)
+        if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
         {
-            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                Time.deltaTime * SpeedChangeRate);
-
+            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
             _speed = Mathf.Round(_speed * 1000f) / 1000f;
         }
         else
@@ -277,27 +325,24 @@ public class PlayerController : MonoBehaviour
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
         if (_animationBlend < 0.01f) _animationBlend = 0f;
 
-        // normalise input direction
         Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
         if (_input.move != Vector2.zero)
         {
-            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                              _mainCamera.transform.eulerAngles.y;
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                RotationSmoothTime);
-
-            // rotate to face input direction relative to camera position
+            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
+            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
         }
 
-
         Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
-        // move the player
-        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                         new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
+        // Default 상태 애니메이션: 이동 중이면 Move = true
+        if (_hasAnimator)
+        {
+            _animator.SetBool(_animIDMove, _input.move != Vector2.zero);
+        }
     }
 
     private void GroundedCheck()
@@ -319,68 +364,111 @@ public class PlayerController : MonoBehaviour
     {
         if (Grounded)
         {
-            // reset the fall timeout timer
             _fallTimeoutDelta = FallTimeout;
 
-            // update animator if using character
             if (_hasAnimator)
             {
                 _animator.SetBool(_animIDJump, false);
                 _animator.SetBool(_animIDFreeFall, false);
             }
 
-            // stop our velocity dropping infinitely when grounded
             if (_verticalVelocity < 0.0f)
             {
                 _verticalVelocity = -2f;
             }
 
-            // Jump
-            if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+            // 줌인 상태에서 Evade 체크
+            if (_input.isZooming && _input.evade && _evadeTimeoutDelta <= 0.0f)
             {
-                // the square root of H * -2 * G = how much velocity needed to reach desired height
+                PerformEvade();
+            }
+            // 기본 점프
+            else if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+            {
                 _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-
-                // update animator if using character
                 if (_hasAnimator)
                 {
                     _animator.SetBool(_animIDJump, true);
                 }
             }
 
-            // jump timeout
             if (_jumpTimeoutDelta >= 0.0f)
             {
                 _jumpTimeoutDelta -= Time.deltaTime;
             }
+            if (_evadeTimeoutDelta >= 0.0f)
+            {
+                _evadeTimeoutDelta -= Time.deltaTime;
+            }
         }
         else
         {
-            // reset the jump timeout timer
             _jumpTimeoutDelta = JumpTimeout;
+            _evadeTimeoutDelta = EvadeTimeout;
 
-            // fall timeout
             if (_fallTimeoutDelta >= 0.0f)
             {
                 _fallTimeoutDelta -= Time.deltaTime;
             }
-            else
+            else if (_hasAnimator)
             {
-                // update animator if using character
-                if (_hasAnimator)
-                {
-                    _animator.SetBool(_animIDFreeFall, true);
-                }
+                _animator.SetBool(_animIDFreeFall, true);
             }
 
-            // if we are not grounded, do not jump
             _input.jump = false;
+            _input.evade = false;
         }
 
-        // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
         if (_verticalVelocity < _terminalVelocity)
         {
             _verticalVelocity += Gravity * Time.deltaTime;
+
+            if (_isEvading)
+            {
+                Vector3 evadeDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+                _controller.Move(evadeDirection.normalized * (EvadeDistance * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+            }
+        }
+
+        // Evade가 끝났는지 체크
+        if (_isEvading && Grounded)
+        {
+            _isEvading = false;
+        }
+    }
+
+    private void PerformEvade()
+    {
+        //_verticalVelocity = Mathf.Sqrt(EvadeHeight * -2f * Gravity);
+        _isEvading = true;
+        _evadeTimeoutDelta = EvadeTimeout;
+
+        if (_hasAnimator)
+        {
+            Vector3 moveDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            Vector3 cameraForward = _mainCamera.transform.forward;
+            cameraForward.y = 0;
+            cameraForward = cameraForward.normalized;
+
+            float angle = Vector3.SignedAngle(cameraForward, moveDirection, Vector3.up);
+
+            // 4방향 Evade 트리거 (Trigger로 가정)
+            if (angle >= -45f && angle <= 45f) // 앞
+            {
+                _animator.SetTrigger(_animIDEvade); // "EvadeForward"로 변경 가능
+            }
+            else if (angle >= 135f || angle <= -135f) // 뒤
+            {
+                _animator.SetTrigger(_animIDEvade); // "EvadeBackward"로 변경 가능
+            }
+            else if (angle > 45f && angle < 135f) // 오른쪽
+            {
+                _animator.SetTrigger(_animIDEvade); // "EvadeRight"로 변경 가능
+            }
+            else // 왼쪽
+            {
+                _animator.SetTrigger(_animIDEvade); // "EvadeLeft"로 변경 가능
+            }
         }
     }
 }

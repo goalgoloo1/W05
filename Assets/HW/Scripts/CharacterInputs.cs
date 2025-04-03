@@ -18,6 +18,7 @@ public class CharacterInputs : MonoBehaviour
     public Vector2 move;
     public Vector2 look;
     public bool jump;
+    public bool evade; // Evade 입력 추가
     public bool isZooming;
 
     [Header("Mouse Cursor Settings")]
@@ -73,7 +74,14 @@ public class CharacterInputs : MonoBehaviour
 
     public void OnEvade(InputValue value) //Zoomed In Action Map -> Evade.
     {
-
+        if (isZooming) // 줌인 상태에서만 Evade 작동
+        {
+            EvadeInput(value.isPressed);
+        }
+        else
+        {
+            JumpInput(value.isPressed); // 줌아웃 상태에서는 기본 점프
+        }
     }
 
 #endif
@@ -91,6 +99,11 @@ public class CharacterInputs : MonoBehaviour
     public void JumpInput(bool newJumpState)
     {
         jump = newJumpState;
+    }
+
+    public void EvadeInput(bool newEvadeState)
+    {
+        evade = newEvadeState;
     }
 
     private void OnApplicationFocus(bool hasFocus)
