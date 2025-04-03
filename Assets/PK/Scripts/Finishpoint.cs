@@ -6,7 +6,7 @@ using System.Collections;
 public class Finishpoint : MonoBehaviour
 {
     [SerializeField] Scene newScene;
-
+    [SerializeField] int SceneNo = 2;
     void OnTriggerEnter(Collider col)
     {
         PlayerController playerController = col.GetComponent<PlayerController>();
@@ -15,6 +15,8 @@ public class Finishpoint : MonoBehaviour
             Debug.Log("Player has reached finish point, going to " + newScene);
         }
 
+        SaveManager.Instance.SetProgress(SceneNo);
+        SaveManager.Instance.Save();
         StartCoroutine(ShowNextScene());
     }
 
