@@ -61,24 +61,6 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Time required to pass before being able to evade again")]
     public float EvadeTimeout = 5.0f; // Evade 쿨다운
 
-    //[Header("Cinemachine")]
-    //[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
-    //public GameObject CinemachineCameraTarget;
-
-    //[Tooltip("How far in degrees can you move the camera up")]
-    //public float TopClamp = 70.0f;
-
-    //[Tooltip("How far in degrees can you move the camera down")]
-    //public float BottomClamp = -30.0f;
-
-    //[Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
-    //public float CameraAngleOverride = 0.0f;
-
-    //[Tooltip("For locking the camera position on all axis")]
-    //public bool LockCameraPosition = false;
-
-    //[SerializeField] private bool isZooming = false;
-
 
     [SerializeField] GameObject cameraFollowObject; //cameras will follow this obj that is on player gameobject.
     private CharacterController _controller;
@@ -113,7 +95,6 @@ public class PlayerController : MonoBehaviour
     private int _animIDMove;
     private int _animIDFrontMove;
     private int _animIDBackMove;
-    private int _animIDSideMove;
     private int _animIDEvade;
     private int _animIDRightMove;
     private int _animIDLeftMove;
@@ -151,7 +132,6 @@ public class PlayerController : MonoBehaviour
         _animIDGrounded = Animator.StringToHash("Grounded");
         _animIDBackMove = Animator.StringToHash("BackMove");
         _animIDEvade = Animator.StringToHash("Evade");
-        _animIDSideMove = Animator.StringToHash("SideMove");
         _animIDRightMove = Animator.StringToHash("RightMove");
         _animIDLeftMove = Animator.StringToHash("LeftMove");
         _animIDFrontMove = Animator.StringToHash("FrontMove");
@@ -174,7 +154,7 @@ public class PlayerController : MonoBehaviour
         if (_isEvading)
         {
             // 회피 중 이동 처리
-            _controller.Move(_evadeDirection.normalized * (EvadeDistance * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+            //_controller.Move(_evadeDirection.normalized * (EvadeDistance * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
             // 회피 지속 시간 감소
             _evadeTimeRemaining -= Time.deltaTime;
@@ -463,6 +443,11 @@ public class PlayerController : MonoBehaviour
                     _animator.SetBool(_animIDJump, true);
                 }
                 _input.jump = false;
+                _input.evade = false;
+            }
+            else
+            {
+                _input.evade = false;
             }
 
             if (_jumpTimeoutDelta >= 0.0f)
