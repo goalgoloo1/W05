@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -12,6 +13,8 @@ public class CharacterInputs : MonoBehaviour
     [SerializeField] PlayerInput playerInput;
     [SerializeField] CinemachineCamera defaultCamera;
     [SerializeField] CinemachineCamera zoomInCamera;
+
+    public Action onFireAction; 
 
     [Header("Character Input Values")]
     public Vector2 move;
@@ -79,6 +82,11 @@ public class CharacterInputs : MonoBehaviour
         {
             JumpInput(value.isPressed); // 줌아웃 상태에서는 기본 점프
         }
+    }
+
+    public void OnFire(InputValue value)
+    {
+        onFireAction?.Invoke();
     }
 
 #endif

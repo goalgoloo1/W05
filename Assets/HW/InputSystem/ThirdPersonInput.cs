@@ -302,6 +302,15 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Button"",
+                    ""id"": ""e28d0561-58dd-4a16-b2d1-93ec16404b56"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -436,6 +445,28 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""action"": ""Evade"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""17bca299-e2d8-40d6-b199-ed4dab3a0fe4"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a084a0c8-10fa-486b-831c-8a794d882ff5"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -482,6 +513,7 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         m_ZoomedInPlayerMove_Look = m_ZoomedInPlayerMove.FindAction("Look", throwIfNotFound: true);
         m_ZoomedInPlayerMove_Zoom = m_ZoomedInPlayerMove.FindAction("Zoom", throwIfNotFound: true);
         m_ZoomedInPlayerMove_Evade = m_ZoomedInPlayerMove.FindAction("Evade", throwIfNotFound: true);
+        m_ZoomedInPlayerMove_Fire = m_ZoomedInPlayerMove.FindAction("Fire", throwIfNotFound: true);
     }
 
     ~@ThirdPersonInput()
@@ -696,6 +728,7 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_ZoomedInPlayerMove_Look;
     private readonly InputAction m_ZoomedInPlayerMove_Zoom;
     private readonly InputAction m_ZoomedInPlayerMove_Evade;
+    private readonly InputAction m_ZoomedInPlayerMove_Fire;
     /// <summary>
     /// Provides access to input actions defined in input action map "Zoomed In Player Move".
     /// </summary>
@@ -723,6 +756,10 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "ZoomedInPlayerMove/Evade".
         /// </summary>
         public InputAction @Evade => m_Wrapper.m_ZoomedInPlayerMove_Evade;
+        /// <summary>
+        /// Provides access to the underlying input action "ZoomedInPlayerMove/Fire".
+        /// </summary>
+        public InputAction @Fire => m_Wrapper.m_ZoomedInPlayerMove_Fire;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -761,6 +798,9 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Evade.started += instance.OnEvade;
             @Evade.performed += instance.OnEvade;
             @Evade.canceled += instance.OnEvade;
+            @Fire.started += instance.OnFire;
+            @Fire.performed += instance.OnFire;
+            @Fire.canceled += instance.OnFire;
         }
 
         /// <summary>
@@ -784,6 +824,9 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Evade.started -= instance.OnEvade;
             @Evade.performed -= instance.OnEvade;
             @Evade.canceled -= instance.OnEvade;
+            @Fire.started -= instance.OnFire;
+            @Fire.performed -= instance.OnFire;
+            @Fire.canceled -= instance.OnFire;
         }
 
         /// <summary>
@@ -914,5 +957,12 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnEvade(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Fire" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFire(InputAction.CallbackContext context);
     }
 }

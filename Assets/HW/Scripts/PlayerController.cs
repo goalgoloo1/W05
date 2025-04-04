@@ -115,6 +115,8 @@ public class PlayerController : MonoBehaviour
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
         _evadeTimeoutDelta = EvadeTimeout; // Evade 쿨다운 초기화
+
+        _input.onFireAction += Fire;
     }
 
     private void AssignAnimationIDs()
@@ -178,6 +180,10 @@ public class PlayerController : MonoBehaviour
         if (_evadeTimeoutDelta >= 0.0f) //회피 대기시간 감소
         {
             _evadeTimeoutDelta -= Time.deltaTime;
+        }
+        if (fireTimeOutDelta >= 0f)
+        {
+            fireTimeOutDelta -= Time.deltaTime;
         }
 
 
@@ -504,5 +510,28 @@ public class PlayerController : MonoBehaviour
     public void SetMoveable(bool value)
     {
         _isMoveDisabled = value;
+    }
+
+    [SerializeField] private Transform gunEdgeTransform;
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] CinemachineCamera zoomInCamera;
+    bool fireable;
+
+    public float FireCoolDown = 1f;
+    public float fireTimeOutDelta = 0f;
+    public void Fire()
+    {
+        if(fireTimeOutDelta <= 0f)
+        {
+            CinemachineThirdPersonAim cinemachineAim = zoomInCamera.GetComponent<CinemachineThirdPersonAim>();
+
+            Vector3 aimingTarget = cinemachineAim.AimTarget;
+
+            GameObject playerBullet = Instantiate(bulletPrefab, gunEdgeTransform.position, Quaternion.identity);
+            playerBullet.GetComponent<PlayerBulletMovement>().SetTargetPosition(aimingTarget);
+
+            fireTimeOutDelta = FireCoolDown;
+        }
+
     }
 }
