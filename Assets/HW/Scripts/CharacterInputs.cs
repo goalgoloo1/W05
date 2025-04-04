@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.Rendering.DebugUI;
 
 /// <summary>
 /// Handle Input.
@@ -53,8 +52,7 @@ public class CharacterInputs : MonoBehaviour
             playerInput.SwitchCurrentActionMap("Zoomed In Player Move");
 
             //CameraChange
-            zoomInCamera.Priority = 10;
-            defaultCamera.Priority = 0;
+            CameraController.Instance.ChangeCamera(zoomInCamera);
         }
         else
         {
@@ -62,8 +60,7 @@ public class CharacterInputs : MonoBehaviour
             playerInput.SwitchCurrentActionMap("Default Player Move");
 
             //CameraChange
-            defaultCamera.Priority = 10;
-            zoomInCamera.Priority = 0;
+            CameraController.Instance.ChangeCamera(defaultCamera);
         }
     }
 

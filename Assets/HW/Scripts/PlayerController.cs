@@ -52,12 +52,6 @@ public class PlayerController : MonoBehaviour
     public LayerMask GroundLayers;
 
     [Space(10)]
-    [Tooltip("The slight height the player lifts during evade (minimal for side movement)")]
-    public float EvadeLift = 0.2f; // 최소한의 수직 리프트 (옆으로 가는 느낌 강조)
-    [Tooltip("The height the player can evade in zoom mode")]
-    public float EvadeHeight = 2.0f; // Evade용 더 높은 점프 높이
-    [Tooltip("The distance the player moves forward during evade")]
-    public float EvadeDistance = 4.0f; // Evade 수평 이동 거리
     [Tooltip("Time required to pass before being able to evade again")]
     public float EvadeTimeout = 5.0f; // Evade 쿨다운
 
@@ -71,7 +65,6 @@ public class PlayerController : MonoBehaviour
 
     // player
     private float _speed;
-    private float _animationBlend;
     private float _targetRotation = 0.0f;
     private float _rotationVelocity;
     private float _verticalVelocity;
@@ -79,6 +72,7 @@ public class PlayerController : MonoBehaviour
     private float _evadeTimeRemaining; // Evade 동작 남은 시간
     private Vector3 _evadeDirection; // Evade 방향 저장
     private bool _isEvading; // Evade 중인지 추적
+    private bool _isMoveDisabled; //움직일 수 없는 상태.
 
     // timeout deltatime
     private float _jumpTimeoutDelta;
@@ -87,7 +81,6 @@ public class PlayerController : MonoBehaviour
 
 
     // animation IDs
-    //private int _animIDSpeed;
     private int _animIDGrounded;
     private int _animIDJump;
     private int _animIDFreeFall;
@@ -105,8 +98,6 @@ public class PlayerController : MonoBehaviour
     private float currentYRotation = 0f;
     public float maxXAngle = 50f;
     //private bool wasZoomingLastFrame = false; // 줌 상태 추적
-
-    private const float _threshold = 0.01f;
 
     private bool _hasAnimator;
 
@@ -151,31 +142,45 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        if (_isEvading)
+        if(_isMoveDisabled) //true. 움직일 수 없음.
         {
-            // 회피 중 이동 처리
-            //_controller.Move(_evadeDirection.normalized * (EvadeDistance * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-            // 회피 지속 시간 감소
-            _evadeTimeRemaining -= Time.deltaTime;
-            if (_evadeTimeRemaining <= 0.0f && Grounded)
-            {
-                _isEvading = false; // 회피 종료
-            }
         }
-        else
+        else //false
         {
-            if (_input.isZooming)
+            if (_isEvading)
             {
-                _animator.SetBool(_animIDZoom, true);
-                OnZoomMove();
+                _evadeTimeRemaining -= Time.deltaTime;
+                if (_evadeTimeRemaining <= 0.0f && Grounded)
+                {
+                    _isEvading = false; // 회피 종료
+                }
             }
             else
             {
-                _animator.SetBool(_animIDZoom, false);
-                DefaultMove();
+                if (_input.isZooming)
+                {
+                    _animator.SetBool(_animIDZoom, true);
+                    OnZoomMove();
+                }
+                else
+                {
+                    _animator.SetBool(_animIDZoom, false);
+                    DefaultMove();
+                }
             }
         }
+
+        if (_jumpTimeoutDelta >= 0.0f) //점프 대기시간 감소
+        {
+            _jumpTimeoutDelta -= Time.deltaTime;
+        }
+        if (_evadeTimeoutDelta >= 0.0f) //회피 대기시간 감소
+        {
+            _evadeTimeoutDelta -= Time.deltaTime;
+        }
+
+
     }
 
     private void LateUpdate()
@@ -328,9 +333,6 @@ public class PlayerController : MonoBehaviour
             _speed = targetSpeed;
         }
 
-        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-        if (_animationBlend < 0.01f) _animationBlend = 0f;
-
         Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
         if (_input.move != Vector2.zero)
@@ -413,12 +415,12 @@ public class PlayerController : MonoBehaviour
 
     private void JumpAndGravity()
     {
-        if (Grounded)
+        if (Grounded) //땅에 있을 때
         {
-            _fallTimeoutDelta = FallTimeout;
+            _fallTimeoutDelta = FallTimeout; //낙하 전환시간은 초기치로 계속 초기화
 
-            if (_hasAnimator)
-            {
+            if (_hasAnimator) //애니메이션 재생 없음.
+            { 
                 _animator.SetBool(_animIDJump, false);
                 _animator.SetBool(_animIDFreeFall, false);
             }
@@ -450,21 +452,9 @@ public class PlayerController : MonoBehaviour
                 _input.evade = false;
             }
 
-            if (_jumpTimeoutDelta >= 0.0f)
-            {
-                _jumpTimeoutDelta -= Time.deltaTime;
-            }
-            if (_evadeTimeoutDelta >= 0.0f)
-            {
-                _evadeTimeoutDelta -= Time.deltaTime;
-                // 디버깅: 쿨타임 상태 확인
-                if (_evadeTimeoutDelta > 0.0f)
-                {
-                    Debug.Log($"Evade Cooldown: {_evadeTimeoutDelta}");
-                }
-            }
+
         }
-        else
+        else //공중
         {
             _jumpTimeoutDelta = JumpTimeout;
             _evadeTimeoutDelta = EvadeTimeout;
@@ -485,8 +475,6 @@ public class PlayerController : MonoBehaviour
         if (_verticalVelocity < _terminalVelocity)
         {
             _verticalVelocity += Gravity * Time.deltaTime;
-
-            // 회피 중 이동은 Move()에서 처리하므로 여기서는 제거
         }
 
         if (_isEvading && Grounded && _evadeTimeRemaining <= 0.0f)
@@ -513,20 +501,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    //private void OnAnimatorMove()
-    //{
-    //    if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Aerial Evade Front/Right"))
-    //    {
-    //        // Evade 애니메이션일 때만 Root Motion 적용
-    //        Vector3 rootMotionDelta = _animator.deltaPosition;
-    //        _controller.Move(rootMotionDelta + new Vector3(0, _verticalVelocity, 0) * Time.deltaTime);
-    //    }
-    //    else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Aerial Evade"))
-    //    {
-    //        // Evade 애니메이션일 때만 Root Motion 적용
-    //        Vector3 rootMotionDelta = _animator.deltaPosition;
-    //        _controller.Move(rootMotionDelta + new Vector3(0, _verticalVelocity, 0) * Time.deltaTime);
-    //    }
-    //    // 다른 애니메이션은 코드에서 이동 제어 (Root Motion 무시)
-    //}
+    public void SetMoveable(bool value)
+    {
+        _isMoveDisabled = value;
+    }
 }
