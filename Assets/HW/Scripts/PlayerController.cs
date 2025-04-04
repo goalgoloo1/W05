@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("The distance the player moves forward during evade")]
     public float EvadeDistance = 4.0f; // Evade 수평 이동 거리
     [Tooltip("Time required to pass before being able to evade again")]
-    public float EvadeTimeout = 1.0f; // Evade 쿨다운
+    public float EvadeTimeout = 5.0f; // Evade 쿨다운
 
     //[Header("Cinemachine")]
     //[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
@@ -115,8 +115,8 @@ public class PlayerController : MonoBehaviour
     private int _animIDBackMove;
     private int _animIDSideMove;
     private int _animIDEvade;
-    //private int _animIDRightMove;
-    //private int _animIDLeftMove;
+    private int _animIDRightMove;
+    private int _animIDLeftMove;
     //private int _animIDMotionSpeed;
 
     //Cameras
@@ -152,6 +152,9 @@ public class PlayerController : MonoBehaviour
         _animIDBackMove = Animator.StringToHash("BackMove");
         _animIDEvade = Animator.StringToHash("Evade");
         _animIDSideMove = Animator.StringToHash("SideMove");
+        _animIDRightMove = Animator.StringToHash("RightMove");
+        _animIDLeftMove = Animator.StringToHash("LeftMove");
+        _animIDFrontMove = Animator.StringToHash("FrontMove");
         _animIDMove = Animator.StringToHash("Move");
         _animIDJump = Animator.StringToHash("Jump");
         _animIDZoom = Animator.StringToHash("Zoom");
@@ -168,17 +171,30 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        if(_input.isZooming)
+        if (_isEvading)
         {
-            _animator.SetBool(_animIDZoom, true);
+            // 회피 중 이동 처리
+            _controller.Move(_evadeDirection.normalized * (EvadeDistance * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-            OnZoomMove();
+            // 회피 지속 시간 감소
+            _evadeTimeRemaining -= Time.deltaTime;
+            if (_evadeTimeRemaining <= 0.0f && Grounded)
+            {
+                _isEvading = false; // 회피 종료
+            }
         }
         else
         {
-            _animator.SetBool(_animIDZoom, false);
-
-            DefaultMove();
+            if (_input.isZooming)
+            {
+                _animator.SetBool(_animIDZoom, true);
+                OnZoomMove();
+            }
+            else
+            {
+                _animator.SetBool(_animIDZoom, false);
+                DefaultMove();
+            }
         }
     }
 
@@ -193,12 +209,6 @@ public class PlayerController : MonoBehaviour
     {
         if(_input.isZooming)
         {
-            // 플레이어의 초기 Y축 방향으로 카메라 맞춤
-            currentYRotation = transform.eulerAngles.y;
-            //currentXRotation = 0f; // Tilt 초기화 (필요 시 조정)
-            //cameraFollowObject.transform.rotation = Quaternion.Euler(cameraFollowObject.transform.eulerAngles.x, currentYRotation, 0f);
-
-
             // Pan/Tilt 입력 적용
             float rotateY = _input.look.x;
             float rotateX = _input.look.y;
@@ -276,38 +286,54 @@ public class PlayerController : MonoBehaviour
 
             float angle = Vector3.SignedAngle(cameraForward, moveDirection, Vector3.up);
 
-            if (angle >= -45f && angle <= 45f)
+            // 방향별 애니메이션 설정
+            if (angle >= -55f && angle <= 55f) // 앞 (Front)
             {
-                _animator.SetBool(_animIDMove, true);
+                _animator.SetBool(_animIDFrontMove, true);
                 _animator.SetBool(_animIDBackMove, false);
-                _animator.SetBool(_animIDSideMove, false);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, false);
             }
-            else if (angle >= 135f || angle <= -135f)
+            else if (angle >= 125f || angle <= -125f) // 뒤 (Back)
             {
-                _animator.SetBool(_animIDMove, false);
+                _animator.SetBool(_animIDFrontMove, false);
                 _animator.SetBool(_animIDBackMove, true);
-                _animator.SetBool(_animIDSideMove, false);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, false);
             }
-            else
+            else if (angle > 55f && angle < 125f) // 오른쪽 (Right)
             {
-                _animator.SetBool(_animIDMove, false);
+                _animator.SetBool(_animIDFrontMove, false);
                 _animator.SetBool(_animIDBackMove, false);
-                _animator.SetBool(_animIDSideMove, true);
+                _animator.SetBool(_animIDRightMove, true);
+                _animator.SetBool(_animIDLeftMove, false);
+            }
+            else if (angle < -55f && angle > -125f) // 왼쪽 (Left)
+            {
+                _animator.SetBool(_animIDFrontMove, false);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, true);
             }
         }
         else if (_hasAnimator && !_isEvading)
         {
-            _animator.SetBool(_animIDMove, false);
+            // 이동이 없으면 모든 방향 애니메이션 끔
+            _animator.SetBool(_animIDFrontMove, false);
             _animator.SetBool(_animIDBackMove, false);
-            _animator.SetBool(_animIDSideMove, false);
+            _animator.SetBool(_animIDRightMove, false);
+            _animator.SetBool(_animIDLeftMove, false);
         }
     }
-    private void DefaultMove() //Move Logic When Player is not zooming in.
+    private void DefaultMove() // Move Logic When Player is not zooming in.
     {
         float targetSpeed = DefaultMoveSpeed;
 
-        if (_input.move == Vector2.zero) targetSpeed = 0.0f;
-
+        if (_input.move == Vector2.zero)
+        {
+            targetSpeed = 0.0f;
+            _animator.SetBool(_animIDMove, false);
+        }
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
         float speedOffset = 0.1f;
         float inputMagnitude = _input.move.magnitude;
@@ -332,16 +358,61 @@ public class PlayerController : MonoBehaviour
             _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
+            _animator.SetBool(_animIDMove, true);
         }
 
         Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
         _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-        // Default 상태 애니메이션: 이동 중이면 Move = true
-        if (_hasAnimator)
+        // Default 상태 애니메이션: 방향별 Bool 값 조정
+        if (_hasAnimator && _input.move != Vector2.zero)
         {
-            _animator.SetBool(_animIDMove, _input.move != Vector2.zero);
+            Vector3 moveDirection = targetDirection.normalized;
+            Vector3 cameraForward = _mainCamera.transform.forward;
+            cameraForward.y = 0;
+            cameraForward = cameraForward.normalized;
+
+            float angle = Vector3.SignedAngle(cameraForward, moveDirection, Vector3.up);
+
+            // 방향별 애니메이션 설정
+            if (angle >= -55f && angle <= 55f) // 앞 (Front)
+            {
+                _animator.SetBool(_animIDFrontMove, true);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, false);
+            }
+            else if (angle >= 135f || angle <= -135f) // 뒤 (Back)
+            {
+                _animator.SetBool(_animIDFrontMove, false);
+                _animator.SetBool(_animIDBackMove, true);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, false);
+            }
+            else if (angle > 55f && angle < 135f) // 오른쪽 (Right)
+            {
+                _animator.SetBool(_animIDFrontMove, false);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDRightMove, true);
+                _animator.SetBool(_animIDLeftMove, false);
+            }
+            else if (angle < -55f && angle > -135f) // 왼쪽 (Left)
+            {
+                _animator.SetBool(_animIDFrontMove, false);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, true);
+            }
+        }
+        else if (_hasAnimator)
+        {
+            // 이동이 없으면 모든 방향 애니메이션 끔
+            _animator.SetBool(_animIDFrontMove, false);
+            _animator.SetBool(_animIDBackMove, false);
+            _animator.SetBool(_animIDRightMove, false);
+            _animator.SetBool(_animIDLeftMove, false);
         }
     }
 
@@ -381,6 +452,7 @@ public class PlayerController : MonoBehaviour
             if (_input.isZooming && _input.evade && _evadeTimeoutDelta <= 0.0f)
             {
                 PerformEvade();
+                _input.evade = false; // Evade 입력 즉시 리셋
             }
             // 기본 점프
             else if (_input.jump && _jumpTimeoutDelta <= 0.0f)
@@ -390,6 +462,7 @@ public class PlayerController : MonoBehaviour
                 {
                     _animator.SetBool(_animIDJump, true);
                 }
+                _input.jump = false;
             }
 
             if (_jumpTimeoutDelta >= 0.0f)
@@ -399,6 +472,11 @@ public class PlayerController : MonoBehaviour
             if (_evadeTimeoutDelta >= 0.0f)
             {
                 _evadeTimeoutDelta -= Time.deltaTime;
+                // 디버깅: 쿨타임 상태 확인
+                if (_evadeTimeoutDelta > 0.0f)
+                {
+                    Debug.Log($"Evade Cooldown: {_evadeTimeoutDelta}");
+                }
             }
         }
         else
@@ -423,52 +501,47 @@ public class PlayerController : MonoBehaviour
         {
             _verticalVelocity += Gravity * Time.deltaTime;
 
-            if (_isEvading)
-            {
-                Vector3 evadeDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-                _controller.Move(evadeDirection.normalized * (EvadeDistance * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
-            }
+            // 회피 중 이동은 Move()에서 처리하므로 여기서는 제거
         }
 
-        // Evade가 끝났는지 체크
-        if (_isEvading && Grounded)
+        if (_isEvading && Grounded && _evadeTimeRemaining <= 0.0f)
         {
-            _isEvading = false;
+            _isEvading = false; // 지면 착지 후 회피 종료
         }
     }
+
 
     private void PerformEvade()
     {
-        //_verticalVelocity = Mathf.Sqrt(EvadeHeight * -2f * Gravity);
-        _isEvading = true;
-        _evadeTimeoutDelta = EvadeTimeout;
-
-        if (_hasAnimator)
+        if (!_isEvading && _evadeTimeoutDelta <= 0.0f) // 쿨타임이 끝난 경우에만 회피 시작
         {
+            _animator.SetTrigger(_animIDEvade);
+            _isEvading = true;
+            _evadeTimeoutDelta = EvadeTimeout; // 쿨타임 재설정
+            _evadeTimeRemaining = 0.3f; // 회피 동작 지속 시간 (조정 가능)
+
+            // 방향 계산
             Vector3 moveDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-            Vector3 cameraForward = _mainCamera.transform.forward;
-            cameraForward.y = 0;
-            cameraForward = cameraForward.normalized;
+            _evadeDirection = moveDirection.normalized;
 
-            float angle = Vector3.SignedAngle(cameraForward, moveDirection, Vector3.up);
-
-            // 4방향 Evade 트리거 (Trigger로 가정)
-            if (angle >= -45f && angle <= 45f) // 앞
-            {
-                _animator.SetTrigger(_animIDEvade); // "EvadeForward"로 변경 가능
-            }
-            else if (angle >= 135f || angle <= -135f) // 뒤
-            {
-                _animator.SetTrigger(_animIDEvade); // "EvadeBackward"로 변경 가능
-            }
-            else if (angle > 45f && angle < 135f) // 오른쪽
-            {
-                _animator.SetTrigger(_animIDEvade); // "EvadeRight"로 변경 가능
-            }
-            else // 왼쪽
-            {
-                _animator.SetTrigger(_animIDEvade); // "EvadeLeft"로 변경 가능
-            }
+            Debug.Log($"Evade Started! Timeout: {_evadeTimeoutDelta}, Remaining: {_evadeTimeRemaining}");
         }
     }
+
+    //private void OnAnimatorMove()
+    //{
+    //    if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Aerial Evade Front/Right"))
+    //    {
+    //        // Evade 애니메이션일 때만 Root Motion 적용
+    //        Vector3 rootMotionDelta = _animator.deltaPosition;
+    //        _controller.Move(rootMotionDelta + new Vector3(0, _verticalVelocity, 0) * Time.deltaTime);
+    //    }
+    //    else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Aerial Evade"))
+    //    {
+    //        // Evade 애니메이션일 때만 Root Motion 적용
+    //        Vector3 rootMotionDelta = _animator.deltaPosition;
+    //        _controller.Move(rootMotionDelta + new Vector3(0, _verticalVelocity, 0) * Time.deltaTime);
+    //    }
+    //    // 다른 애니메이션은 코드에서 이동 제어 (Root Motion 무시)
+    //}
 }
