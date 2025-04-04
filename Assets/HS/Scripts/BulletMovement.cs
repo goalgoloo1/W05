@@ -13,7 +13,7 @@ public class BulletMovement : MonoBehaviour
 
     void Update()
     {
-        transform.position += transform.forward * speed * Time.deltaTime;
+        rb.AddForce(transform.forward * speed, ForceMode.Impulse);
     }
 
     void OnCollisionEnter(Collision collision)

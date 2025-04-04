@@ -1580,3 +1580,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 20
+  enemyShooter: {fileID: 0}
