@@ -108,11 +108,11 @@ public class JSW_PlayerController : MonoBehaviour
         JumpAndGravity();
         if (!isStop) Move();
 
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            print("Q ´©¸§ Èçµé¸²");
-            cinemachineShake.ShakeCamera(0.5f, 10f);
-        }
+        //if (Input.GetKeyDown(KeyCode.Q))
+        //{
+        //    print("Q ´©¸§ Èçµé¸²");
+        //    cinemachineShake.ShakeCamera(0.5f, 10f);
+        //}
     }
 
     private void Move()
