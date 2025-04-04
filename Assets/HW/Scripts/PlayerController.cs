@@ -406,17 +406,21 @@ public class PlayerController : MonoBehaviour
 
     private void GroundedCheck()
     {
-        // set sphere position, with offset
-        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
-            transform.position.z);
-        Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-            QueryTriggerInteraction.Ignore);
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
+        Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
 
-        // update animator if using character
         if (_hasAnimator)
         {
             _animator.SetBool(_animIDGrounded, Grounded);
         }
+    }
+
+    // Gizmos로 구체 그리기
+    private void OnDrawGizmos()
+    {
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
+        Gizmos.color = Color.red; // 구체 색상 설정
+        Gizmos.DrawWireSphere(spherePosition, GroundedRadius); // 구체 그리기
     }
 
     private void JumpAndGravity()
