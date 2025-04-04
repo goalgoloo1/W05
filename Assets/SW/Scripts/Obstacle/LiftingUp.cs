@@ -38,11 +38,11 @@ public class LiftingUp : MonoBehaviour
     // 플레이어를 정해진 위치로 올려주는 코루틴
     IEnumerator PlayerUp_CO()
     {
-        float initGravity = _player.GetComponent<JSW_PlayerController>().Gravity;
+        float initGravity = _player.GetComponent<PlayerController>().Gravity;
         
         cinemachineCamera.SetActive(true);
-        _player.GetComponent<JSW_PlayerController>().Gravity = 0;
-        _player.GetComponent<JSW_PlayerController>().isStop = true;
+        _player.GetComponent<PlayerController>().Gravity = 0;
+        _player.GetComponent<PlayerController>().SetMoveable(true);
 
         // 플레이어 움직임 막기
 
@@ -79,7 +79,7 @@ public class LiftingUp : MonoBehaviour
 
 
         cinemachineCamera.SetActive(false);
-        _player.GetComponent<JSW_PlayerController>().Gravity = initGravity;
-        _player.GetComponent<JSW_PlayerController>().isStop = false;
+        _player.GetComponent<PlayerController>().Gravity = initGravity;
+        _player.GetComponent<PlayerController>().SetMoveable(false); ;
     }
 }

@@ -37,10 +37,11 @@ public class Liftingforward : MonoBehaviour
     // 플레이어를 정해진 위치로 올려주는 코루틴
     IEnumerator PlayerUp_CO()
     {
-        float initGravity = _player.GetComponent<JSW_PlayerController>().Gravity;
+        float initGravity = _player.GetComponent<PlayerController>().Gravity;
         _player.transform.forward = Vector3.back;
-        _player.GetComponent<JSW_PlayerController>().Gravity = 0;
-        _player.GetComponent<JSW_PlayerController>().isStop = true;
+        _player.GetComponent<PlayerController>().Gravity = 0;
+        _player.GetComponent<PlayerController>().SetMoveable(true);
+
         // 플레이어 움직임 막기
 
         // 3의 위치로 이동 시키기
@@ -69,12 +70,13 @@ public class Liftingforward : MonoBehaviour
             if (_targetPos[1].position.z - _player.transform.position.z > 0.1)
             {
                 _impulseSource.GenerateImpulse();
+                _player.transform.position = _targetPos[1].position + Vector3.forward * -30.5f;
                 break;
             }
             yield return null;
         }
 
-        _player.GetComponent<JSW_PlayerController>().Gravity = initGravity;
-        _player.GetComponent<JSW_PlayerController>().isStop = false;
+        _player.GetComponent<PlayerController>().Gravity = initGravity;
+        _player.GetComponent<PlayerController>().SetMoveable(false);
     }
 }
