@@ -3,19 +3,19 @@
 public class EnemyShooting : MonoBehaviour
 {
     private Transform playerTransform;
-    public float aimSpeed = 5f;
-    public float aimOffset = 0.5f;
+    private float m_aimSpeed = 2000f;
+    private float m_aimOffset = 0.5f;
     private float shootTimer = 0f;
 
     public GameObject bulletPrefab;
-    public Transform spawnPoint; 
-    public float fireRate = 1f;
+    public Transform spawnPoint;
+    private float fireRate = 1f;
 
     public float laserMaxLength = 100f;
-    public float laserWidth = 0.05f;
+    public float laserWidth = 0.01f;
 
-    private LineRenderer laserLineRenderer; 
-    private Vector3 currentAimDirection; 
+    private LineRenderer laserLineRenderer;
+    private Vector3 currentAimDirection;
 
     void Start()
     {
@@ -35,7 +35,7 @@ public class EnemyShooting : MonoBehaviour
     {
         if (playerTransform == null || spawnPoint == null || laserLineRenderer == null) return;
 
-        AimAtPlayerHorizontally();
+        //AimAtPlayerHorizontally();
 
         CalculateAimDirection();
 
@@ -53,21 +53,21 @@ public class EnemyShooting : MonoBehaviour
     }
     Vector3 GetAimTargetPosition()
     {
-        return playerTransform.position + Vector3.up * aimOffset;
+        return playerTransform.position + Vector3.up * m_aimOffset;
     }
 
-    void AimAtPlayerHorizontally()
-    {
-        Vector3 targetPosition = GetAimTargetPosition();
-        Vector3 directionToPlayer = targetPosition - transform.position;
-        directionToPlayer.y = 0; 
+    //void AimAtPlayerHorizontally()
+    //{
+    //    Vector3 targetPosition = GetAimTargetPosition();
+    //    Vector3 directionToPlayer = targetPosition - transform.position;
+    //    directionToPlayer.y = 0; 
 
-        if (directionToPlayer != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, aimSpeed * Time.deltaTime);
-        }
-    }
+    //    if (directionToPlayer != Vector3.zero)
+    //    {
+    //        Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+    //        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, aimSpeed * Time.deltaTime);
+    //    }
+    //}
 
     void CalculateAimDirection()
     {

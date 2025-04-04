@@ -6,6 +6,8 @@ TagManager:
   tags:
   - NPC
   - LevelCamera
+  - Enemy
+  - Bullet
   layers:
   - Default
   - TransparentFX
