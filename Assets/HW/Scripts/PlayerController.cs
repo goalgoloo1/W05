@@ -51,23 +51,9 @@ public class PlayerController : MonoBehaviour
     [Tooltip("What layers the character uses as ground")]
     public LayerMask GroundLayers;
 
-    //[Header("Cinemachine")]
-    //[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
-    //public GameObject CinemachineCameraTarget;
-
-    //[Tooltip("How far in degrees can you move the camera up")]
-    //public float TopClamp = 70.0f;
-
-    //[Tooltip("How far in degrees can you move the camera down")]
-    //public float BottomClamp = -30.0f;
-
-    //[Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
-    //public float CameraAngleOverride = 0.0f;
-
-    //[Tooltip("For locking the camera position on all axis")]
-    //public bool LockCameraPosition = false;
-
-    [SerializeField] private bool isZooming = false;
+    [Space(10)]
+    [Tooltip("Time required to pass before being able to evade again")]
+    public float EvadeTimeout = 5.0f; // Evade Äð´Ù¿î
 
 
     [SerializeField] GameObject cameraFollowObject; //cameras will follow this obj that is on player gameobject.
@@ -75,18 +61,45 @@ public class PlayerController : MonoBehaviour
     private CharacterInputs _input;
     private PlayerInput _playerInput;
     private GameObject _mainCamera;
+    [SerializeField] private Animator _animator; //it might be able with inspector referencing.
 
     // player
     private float _speed;
-    private float _animationBlend;
     private float _targetRotation = 0.0f;
     private float _rotationVelocity;
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
+    private float _evadeTimeRemaining; // Evade µ¿ÀÛ ³²Àº ½Ã°£
+    private Vector3 _evadeDirection; // Evade ¹æÇâ ÀúÀå
+    private bool _isEvading; // Evade ÁßÀÎÁö ÃßÀû
+    private bool _isMoveDisabled; //¿òÁ÷ÀÏ ¼ö ¾ø´Â »óÅÂ.
 
     // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
+    private float _evadeTimeoutDelta; // Evade Äð´Ù¿î Å¸ÀÌ¸Ó
+
+
+    // animation IDs
+    private int _animIDGrounded;
+    private int _animIDJump;
+    private int _animIDFreeFall;
+    private int _animIDZoom;
+    private int _animIDMove;
+    private int _animIDFrontMove;
+    private int _animIDBackMove;
+    private int _animIDEvade;
+    private int _animIDRightMove;
+    private int _animIDLeftMove;
+    //private int _animIDMotionSpeed;
+
+    //Cameras
+    private float currentXRotation = 0f;
+    private float currentYRotation = 0f;
+    public float maxXAngle = 50f;
+    //private bool wasZoomingLastFrame = false; // ÁÜ »óÅÂ ÃßÀû
+
+    private bool _hasAnimator;
 
     private void Start()
     {
@@ -94,25 +107,86 @@ public class PlayerController : MonoBehaviour
         _input = GetComponent<CharacterInputs>();
         _playerInput = GetComponent<PlayerInput>();
         _mainCamera = Camera.main.gameObject;
+        _hasAnimator = TryGetComponent(out _animator); //may be by inspector?
+
+        AssignAnimationIDs();
+
+        // reset our timeouts on start
+        _jumpTimeoutDelta = JumpTimeout;
+        _fallTimeoutDelta = FallTimeout;
+        _evadeTimeoutDelta = EvadeTimeout; // Evade Äð´Ù¿î ÃÊ±âÈ­
+
+        _input.onFireAction += Fire;
+    }
+
+    private void AssignAnimationIDs()
+    {
+        //_animIDSpeed = Animator.StringToHash("Speed");
+        _animIDGrounded = Animator.StringToHash("Grounded");
+        _animIDBackMove = Animator.StringToHash("BackMove");
+        _animIDEvade = Animator.StringToHash("Evade");
+        _animIDRightMove = Animator.StringToHash("RightMove");
+        _animIDLeftMove = Animator.StringToHash("LeftMove");
+        _animIDFrontMove = Animator.StringToHash("FrontMove");
+        _animIDMove = Animator.StringToHash("Move");
+        _animIDJump = Animator.StringToHash("Jump");
+        _animIDZoom = Animator.StringToHash("Zoom");
+        _animIDFreeFall = Animator.StringToHash("FreeFall");
+        //_animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
     }
 
     private void Update()
     {
         JumpAndGravity();
-        //GroundedCheck();
+        GroundedCheck();
         Move();
     }
 
     private void Move()
     {
-        if(_input.isZooming)
+        if(_isMoveDisabled) //true. ¿òÁ÷ÀÏ ¼ö ¾øÀ½.
         {
-            OnZoomMove();
+
         }
-        else
+        else //false
         {
-            DefaultMove();
+            if (_isEvading)
+            {
+                _evadeTimeRemaining -= Time.deltaTime;
+                if (_evadeTimeRemaining <= 0.0f && Grounded)
+                {
+                    _isEvading = false; // È¸ÇÇ Á¾·á
+                }
+            }
+            else
+            {
+                if (_input.isZooming)
+                {
+                    _animator.SetBool(_animIDZoom, true);
+                    OnZoomMove();
+                }
+                else
+                {
+                    _animator.SetBool(_animIDZoom, false);
+                    DefaultMove();
+                }
+            }
         }
+
+        if (_jumpTimeoutDelta >= 0.0f) //Á¡ÇÁ ´ë±â½Ã°£ °¨¼Ò
+        {
+            _jumpTimeoutDelta -= Time.deltaTime;
+        }
+        if (_evadeTimeoutDelta >= 0.0f) //È¸ÇÇ ´ë±â½Ã°£ °¨¼Ò
+        {
+            _evadeTimeoutDelta -= Time.deltaTime;
+        }
+        if (fireTimeOutDelta >= 0f)
+        {
+            fireTimeOutDelta -= Time.deltaTime;
+        }
+
+
     }
 
     private void LateUpdate()
@@ -120,22 +194,13 @@ public class PlayerController : MonoBehaviour
         CameraRotation();
     }
 
-    private float currentXRotation = 0f;
-    private float currentYRotation = 0f;
-    public float maxXAngle = 50f;
-    private bool wasZoomingLastFrame = false; // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
 
     private void CameraRotation()
     {
         if(_input.isZooming)
         {
-            // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½ Yï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½
-            currentYRotation = transform.eulerAngles.y;
-            //currentXRotation = 0f; // Tilt ï¿½Ê±ï¿½È­ (ï¿½Ê¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
-            //cameraFollowObject.transform.rotation = Quaternion.Euler(cameraFollowObject.transform.eulerAngles.x, currentYRotation, 0f);
-
-
-            // Pan/Tilt ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½
+            // Pan/Tilt ÀÔ·Â Àû¿ë
             float rotateY = _input.look.x;
             float rotateX = _input.look.y;
 
@@ -143,13 +208,13 @@ public class PlayerController : MonoBehaviour
             currentXRotation -= rotateX;
             currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
 
-            // cameraFollowObjectï¿½ï¿½ È¸ï¿½ï¿½, ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            // cameraFollowObject¸¸ È¸Àü, ÇÃ·¹ÀÌ¾î È¸Àü°ú µ¶¸³
             cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
 
-            // cameraFollowObjectï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Yï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            // cameraFollowObjectÀÇ ¿ùµå È¸Àü¿¡¼­ YÃà °ª¸¸ °¡Á®¿È
             float cameraYRotation = cameraFollowObject.transform.eulerAngles.y;
 
-            // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Yï¿½à¸¸ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+            // ÇÃ·¹ÀÌ¾îÀÇ ÇöÀç È¸Àü¿¡¼­ YÃà¸¸ ¾÷µ¥ÀÌÆ®
             Vector3 playerRotation = transform.eulerAngles;
             playerRotation.y = cameraYRotation;
             transform.eulerAngles = playerRotation;
@@ -163,30 +228,25 @@ public class PlayerController : MonoBehaviour
             currentXRotation -= rotateX;
             currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
 
-            // cameraFollowObjectï¿½ï¿½ È¸ï¿½ï¿½, ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-            //cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
+            // cameraFollowObject¸¸ È¸Àü, ÇÃ·¹ÀÌ¾î È¸Àü°ú µ¶¸³
+            cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
         }
 
     }
 
-    private void OnZoomMove() // Move Logic When Player Is Zooming in.
+    private void OnZoomMove()
     {
         float targetSpeed = ZoomedInMoveSpeed;
 
         if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
         float speedOffset = 0.1f;
-        //float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
         float inputMagnitude = _input.move.magnitude;
 
-        if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-            currentHorizontalSpeed > targetSpeed + speedOffset)
+        if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
         {
-            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                Time.deltaTime * SpeedChangeRate);
-
+            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
             _speed = Mathf.Round(_speed * 1000f) / 1000f;
         }
         else
@@ -194,48 +254,84 @@ public class PlayerController : MonoBehaviour
             _speed = targetSpeed;
         }
 
-        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-        if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-        // normalise input direction
         Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
         if (_input.move != Vector2.zero)
         {
-            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                              _mainCamera.transform.eulerAngles.y;
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                RotationSmoothTime);
-
-            // rotate to face input direction relative to camera position
-            //transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
         }
 
+        if (!_isEvading) // Evade ÁßÀÌ ¾Æ´Ò ¶§¸¸ ÀÏ¹Ý ÀÌµ¿
+        {
+            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+        }
 
-        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+        // Zoom »óÅÂ ¾Ö´Ï¸ÞÀÌ¼Ç
+        if (_hasAnimator && _input.move != Vector2.zero && !_isEvading)
+        {
+            Vector3 moveDirection = targetDirection.normalized;
+            Vector3 cameraForward = _mainCamera.transform.forward;
+            cameraForward.y = 0;
+            cameraForward = cameraForward.normalized;
 
-        // move the player
-        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                         new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+            float angle = Vector3.SignedAngle(cameraForward, moveDirection, Vector3.up);
+
+            // ¹æÇâº° ¾Ö´Ï¸ÞÀÌ¼Ç ¼³Á¤
+            if (angle >= -55f && angle <= 55f) // ¾Õ (Front)
+            {
+                _animator.SetBool(_animIDFrontMove, true);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, false);
+            }
+            else if (angle >= 125f || angle <= -125f) // µÚ (Back)
+            {
+                _animator.SetBool(_animIDFrontMove, false);
+                _animator.SetBool(_animIDBackMove, true);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, false);
+            }
+            else if (angle > 55f && angle < 125f) // ¿À¸¥ÂÊ (Right)
+            {
+                _animator.SetBool(_animIDFrontMove, false);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDRightMove, true);
+                _animator.SetBool(_animIDLeftMove, false);
+            }
+            else if (angle < -55f && angle > -125f) // ¿ÞÂÊ (Left)
+            {
+                _animator.SetBool(_animIDFrontMove, false);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, true);
+            }
+        }
+        else if (_hasAnimator && !_isEvading)
+        {
+            // ÀÌµ¿ÀÌ ¾øÀ¸¸é ¸ðµç ¹æÇâ ¾Ö´Ï¸ÞÀÌ¼Ç ²û
+            _animator.SetBool(_animIDFrontMove, false);
+            _animator.SetBool(_animIDBackMove, false);
+            _animator.SetBool(_animIDRightMove, false);
+            _animator.SetBool(_animIDLeftMove, false);
+        }
     }
-    private void DefaultMove() //Move Logic When Player is not zooming in.
+    private void DefaultMove() // Move Logic When Player is not zooming in.
     {
         float targetSpeed = DefaultMoveSpeed;
 
-        if (_input.move == Vector2.zero) targetSpeed = 0.0f;
-
+        if (_input.move == Vector2.zero)
+        {
+            targetSpeed = 0.0f;
+            _animator.SetBool(_animIDMove, false);
+        }
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
         float speedOffset = 0.1f;
-        //float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
         float inputMagnitude = _input.move.magnitude;
 
-        if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-            currentHorizontalSpeed > targetSpeed + speedOffset)
+        if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
         {
-            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                Time.deltaTime * SpeedChangeRate);
-
+            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
             _speed = Mathf.Round(_speed * 1000f) / 1000f;
         }
         else
@@ -243,98 +339,203 @@ public class PlayerController : MonoBehaviour
             _speed = targetSpeed;
         }
 
-        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-        if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-        // normalise input direction
         Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
         if (_input.move != Vector2.zero)
         {
-            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                              _mainCamera.transform.eulerAngles.y;
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                RotationSmoothTime);
-
-            // rotate to face input direction relative to camera position
+            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
+            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-        }
 
+            _animator.SetBool(_animIDMove, true);
+        }
 
         Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
-        // move the player
-        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                         new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
+        // Default »óÅÂ ¾Ö´Ï¸ÞÀÌ¼Ç: ¹æÇâº° Bool °ª Á¶Á¤
+        if (_hasAnimator && _input.move != Vector2.zero)
+        {
+            Vector3 moveDirection = targetDirection.normalized;
+            Vector3 cameraForward = _mainCamera.transform.forward;
+            cameraForward.y = 0;
+            cameraForward = cameraForward.normalized;
+
+            float angle = Vector3.SignedAngle(cameraForward, moveDirection, Vector3.up);
+
+            // ¹æÇâº° ¾Ö´Ï¸ÞÀÌ¼Ç ¼³Á¤
+            if (angle >= -55f && angle <= 55f) // ¾Õ (Front)
+            {
+                _animator.SetBool(_animIDFrontMove, true);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, false);
+            }
+            else if (angle >= 135f || angle <= -135f) // µÚ (Back)
+            {
+                _animator.SetBool(_animIDFrontMove, false);
+                _animator.SetBool(_animIDBackMove, true);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, false);
+            }
+            else if (angle > 55f && angle < 135f) // ¿À¸¥ÂÊ (Right)
+            {
+                _animator.SetBool(_animIDFrontMove, false);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDRightMove, true);
+                _animator.SetBool(_animIDLeftMove, false);
+            }
+            else if (angle < -55f && angle > -135f) // ¿ÞÂÊ (Left)
+            {
+                _animator.SetBool(_animIDFrontMove, false);
+                _animator.SetBool(_animIDBackMove, false);
+                _animator.SetBool(_animIDRightMove, false);
+                _animator.SetBool(_animIDLeftMove, true);
+            }
+        }
+        else if (_hasAnimator)
+        {
+            // ÀÌµ¿ÀÌ ¾øÀ¸¸é ¸ðµç ¹æÇâ ¾Ö´Ï¸ÞÀÌ¼Ç ²û
+            _animator.SetBool(_animIDFrontMove, false);
+            _animator.SetBool(_animIDBackMove, false);
+            _animator.SetBool(_animIDRightMove, false);
+            _animator.SetBool(_animIDLeftMove, false);
+        }
+    }
+
+    private void GroundedCheck()
+    {
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
+        Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+
+        if (_hasAnimator)
+        {
+            _animator.SetBool(_animIDGrounded, Grounded);
+        }
+    }
+
+    // Gizmos·Î ±¸Ã¼ ±×¸®±â
+    private void OnDrawGizmos()
+    {
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
+        Gizmos.color = Color.red; // ±¸Ã¼ »ö»ó ¼³Á¤
+        Gizmos.DrawWireSphere(spherePosition, GroundedRadius); // ±¸Ã¼ ±×¸®±â
     }
 
     private void JumpAndGravity()
     {
-        if (Grounded)
+        if (Grounded) //¶¥¿¡ ÀÖÀ» ¶§
         {
-            // reset the fall timeout timer
-            _fallTimeoutDelta = FallTimeout;
+            _fallTimeoutDelta = FallTimeout; //³«ÇÏ ÀüÈ¯½Ã°£Àº ÃÊ±âÄ¡·Î °è¼Ó ÃÊ±âÈ­
 
-            //// update animator if using character
-            //if (_hasAnimator)
-            //{
-            //    _animator.SetBool(_animIDJump, false);
-            //    _animator.SetBool(_animIDFreeFall, false);
-            //}
+            if (_hasAnimator) //¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý ¾øÀ½.
+            { 
+                _animator.SetBool(_animIDJump, false);
+                _animator.SetBool(_animIDFreeFall, false);
+            }
 
-            // stop our velocity dropping infinitely when grounded
             if (_verticalVelocity < 0.0f)
             {
                 _verticalVelocity = -2f;
             }
 
-            // Jump
-            if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+            // ÁÜÀÎ »óÅÂ¿¡¼­ Evade Ã¼Å©
+            if (_input.isZooming && _input.evade && _evadeTimeoutDelta <= 0.0f)
             {
-                // the square root of H * -2 * G = how much velocity needed to reach desired height
+                PerformEvade();
+                _input.evade = false; // Evade ÀÔ·Â Áï½Ã ¸®¼Â
+            }
+            // ±âº» Á¡ÇÁ
+            else if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+            {
                 _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-
-                //// update animator if using character
-                //if (_hasAnimator)
-                //{
-                //    _animator.SetBool(_animIDJump, true);
-                //}
+                if (_hasAnimator)
+                {
+                    _animator.SetBool(_animIDJump, true);
+                }
+                _input.jump = false;
+                _input.evade = false;
             }
-
-            // jump timeout
-            if (_jumpTimeoutDelta >= 0.0f)
+            else
             {
-                _jumpTimeoutDelta -= Time.deltaTime;
+                _input.evade = false;
             }
-        }
-        else
-        {
-            // reset the jump timeout timer
-            _jumpTimeoutDelta = JumpTimeout;
 
-            // fall timeout
+
+        }
+        else //°øÁß
+        {
+            _jumpTimeoutDelta = JumpTimeout;
+            _evadeTimeoutDelta = EvadeTimeout;
+
             if (_fallTimeoutDelta >= 0.0f)
             {
                 _fallTimeoutDelta -= Time.deltaTime;
             }
-            else
+            else if (_hasAnimator)
             {
-                //// update animator if using character
-                //if (_hasAnimator)
-                //{
-                //    _animator.SetBool(_animIDFreeFall, true);
-                //}
+                _animator.SetBool(_animIDFreeFall, true);
             }
 
-            // if we are not grounded, do not jump
             _input.jump = false;
+            _input.evade = false;
         }
 
-        // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
         if (_verticalVelocity < _terminalVelocity)
         {
             _verticalVelocity += Gravity * Time.deltaTime;
         }
+
+        if (_isEvading && Grounded && _evadeTimeRemaining <= 0.0f)
+        {
+            _isEvading = false; // Áö¸é ÂøÁö ÈÄ È¸ÇÇ Á¾·á
+        }
+    }
+
+
+    private void PerformEvade()
+    {
+        if (!_isEvading && _evadeTimeoutDelta <= 0.0f) // ÄðÅ¸ÀÓÀÌ ³¡³­ °æ¿ì¿¡¸¸ È¸ÇÇ ½ÃÀÛ
+        {
+            _animator.SetTrigger(_animIDEvade);
+            _isEvading = true;
+            _evadeTimeoutDelta = EvadeTimeout; // ÄðÅ¸ÀÓ Àç¼³Á¤
+            _evadeTimeRemaining = 0.3f; // È¸ÇÇ µ¿ÀÛ Áö¼Ó ½Ã°£ (Á¶Á¤ °¡´É)
+
+            // ¹æÇâ °è»ê
+            Vector3 moveDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            _evadeDirection = moveDirection.normalized;
+
+            Debug.Log($"Evade Started! Timeout: {_evadeTimeoutDelta}, Remaining: {_evadeTimeRemaining}");
+        }
+    }
+
+    public void SetMoveable(bool value)
+    {
+        _isMoveDisabled = value;
+    }
+
+    [SerializeField] private Transform gunEdgeTransform;
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] CinemachineCamera zoomInCamera;
+    bool fireable;
+
+    public float FireCoolDown = 1f;
+    public float fireTimeOutDelta = 0f;
+    public void Fire()
+    {
+        if(fireTimeOutDelta <= 0f)
+        {
+            CinemachineThirdPersonAim cinemachineAim = zoomInCamera.GetComponent<CinemachineThirdPersonAim>();
+
+            Vector3 aimingTarget = cinemachineAim.AimTarget;
+
+            GameObject playerBullet = Instantiate(bulletPrefab, gunEdgeTransform.position, Quaternion.identity);
+            playerBullet.GetComponent<PlayerBulletMovement>().SetTargetPosition(aimingTarget);
+
+            fireTimeOutDelta = FireCoolDown;
+        }
+
     }
 }

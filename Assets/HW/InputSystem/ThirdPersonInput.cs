@@ -117,6 +117,15 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Press(behavior=2)"",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""450a7362-a3d1-43aa-8d58-14d47c2a33b1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -202,7 +211,7 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""id"": ""a0ac84f7-0b68-4e6b-a414-17281156b9e5"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
-                    ""processors"": ""NormalizeVector2,ScaleVector2(y=2)"",
+                    ""processors"": ""NormalizeVector2,ScaleVector2(x=3,y=2)"",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Look"",
                     ""isComposite"": false,
@@ -227,6 +236,28 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e8cd58c5-1dd7-4a90-849e-6b2c4c691ff6"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ca531bc-f431-4827-b8fd-ec6338821260"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -262,6 +293,24 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Press(behavior=1)"",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Evade"",
+                    ""type"": ""Button"",
+                    ""id"": ""200bbc97-ba2b-47d4-b882-b6a3f002ff47"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Button"",
+                    ""id"": ""e28d0561-58dd-4a16-b2d1-93ec16404b56"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -347,7 +396,7 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""id"": ""e0ae5fd7-9196-42f0-b23b-cdf903f9bcb1"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
-                    ""processors"": ""NormalizeVector2,ScaleVector2"",
+                    ""processors"": ""NormalizeVector2,ScaleVector2(x=3,y=3)"",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Look"",
                     ""isComposite"": false,
@@ -372,6 +421,50 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""33f1148d-cb2b-4078-92c6-89d3804a4458"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Evade"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2807d678-90f0-4c64-97f2-afb007a0f5f9"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Evade"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""17bca299-e2d8-40d6-b199-ed4dab3a0fe4"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a084a0c8-10fa-486b-831c-8a794d882ff5"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fire"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -413,11 +506,14 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         m_DefaultPlayerMove_Move = m_DefaultPlayerMove.FindAction("Move", throwIfNotFound: true);
         m_DefaultPlayerMove_Look = m_DefaultPlayerMove.FindAction("Look", throwIfNotFound: true);
         m_DefaultPlayerMove_Zoom = m_DefaultPlayerMove.FindAction("Zoom", throwIfNotFound: true);
+        m_DefaultPlayerMove_Jump = m_DefaultPlayerMove.FindAction("Jump", throwIfNotFound: true);
         // Zoomed In Player Move
         m_ZoomedInPlayerMove = asset.FindActionMap("Zoomed In Player Move", throwIfNotFound: true);
         m_ZoomedInPlayerMove_Move = m_ZoomedInPlayerMove.FindAction("Move", throwIfNotFound: true);
         m_ZoomedInPlayerMove_Look = m_ZoomedInPlayerMove.FindAction("Look", throwIfNotFound: true);
         m_ZoomedInPlayerMove_Zoom = m_ZoomedInPlayerMove.FindAction("Zoom", throwIfNotFound: true);
+        m_ZoomedInPlayerMove_Evade = m_ZoomedInPlayerMove.FindAction("Evade", throwIfNotFound: true);
+        m_ZoomedInPlayerMove_Fire = m_ZoomedInPlayerMove.FindAction("Fire", throwIfNotFound: true);
     }
 
     ~@ThirdPersonInput()
@@ -502,6 +598,7 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_DefaultPlayerMove_Move;
     private readonly InputAction m_DefaultPlayerMove_Look;
     private readonly InputAction m_DefaultPlayerMove_Zoom;
+    private readonly InputAction m_DefaultPlayerMove_Jump;
     /// <summary>
     /// Provides access to input actions defined in input action map "Default Player Move".
     /// </summary>
@@ -525,6 +622,10 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "DefaultPlayerMove/Zoom".
         /// </summary>
         public InputAction @Zoom => m_Wrapper.m_DefaultPlayerMove_Zoom;
+        /// <summary>
+        /// Provides access to the underlying input action "DefaultPlayerMove/Jump".
+        /// </summary>
+        public InputAction @Jump => m_Wrapper.m_DefaultPlayerMove_Jump;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -560,6 +661,9 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Zoom.started += instance.OnZoom;
             @Zoom.performed += instance.OnZoom;
             @Zoom.canceled += instance.OnZoom;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
         }
 
         /// <summary>
@@ -580,6 +684,9 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Zoom.started -= instance.OnZoom;
             @Zoom.performed -= instance.OnZoom;
             @Zoom.canceled -= instance.OnZoom;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
         }
 
         /// <summary>
@@ -620,6 +727,8 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_ZoomedInPlayerMove_Move;
     private readonly InputAction m_ZoomedInPlayerMove_Look;
     private readonly InputAction m_ZoomedInPlayerMove_Zoom;
+    private readonly InputAction m_ZoomedInPlayerMove_Evade;
+    private readonly InputAction m_ZoomedInPlayerMove_Fire;
     /// <summary>
     /// Provides access to input actions defined in input action map "Zoomed In Player Move".
     /// </summary>
@@ -643,6 +752,14 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "ZoomedInPlayerMove/Zoom".
         /// </summary>
         public InputAction @Zoom => m_Wrapper.m_ZoomedInPlayerMove_Zoom;
+        /// <summary>
+        /// Provides access to the underlying input action "ZoomedInPlayerMove/Evade".
+        /// </summary>
+        public InputAction @Evade => m_Wrapper.m_ZoomedInPlayerMove_Evade;
+        /// <summary>
+        /// Provides access to the underlying input action "ZoomedInPlayerMove/Fire".
+        /// </summary>
+        public InputAction @Fire => m_Wrapper.m_ZoomedInPlayerMove_Fire;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -678,6 +795,12 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Zoom.started += instance.OnZoom;
             @Zoom.performed += instance.OnZoom;
             @Zoom.canceled += instance.OnZoom;
+            @Evade.started += instance.OnEvade;
+            @Evade.performed += instance.OnEvade;
+            @Evade.canceled += instance.OnEvade;
+            @Fire.started += instance.OnFire;
+            @Fire.performed += instance.OnFire;
+            @Fire.canceled += instance.OnFire;
         }
 
         /// <summary>
@@ -698,6 +821,12 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Zoom.started -= instance.OnZoom;
             @Zoom.performed -= instance.OnZoom;
             @Zoom.canceled -= instance.OnZoom;
+            @Evade.started -= instance.OnEvade;
+            @Evade.performed -= instance.OnEvade;
+            @Evade.canceled -= instance.OnEvade;
+            @Fire.started -= instance.OnFire;
+            @Fire.performed -= instance.OnFire;
+            @Fire.canceled -= instance.OnFire;
         }
 
         /// <summary>
@@ -785,6 +914,13 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnZoom(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Jump" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnJump(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Zoomed In Player Move" which allows adding and removing callbacks.
@@ -814,5 +950,19 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnZoom(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Evade" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnEvade(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Fire" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFire(InputAction.CallbackContext context);
     }
 }

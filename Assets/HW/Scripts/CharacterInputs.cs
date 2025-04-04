@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -13,10 +14,13 @@ public class CharacterInputs : MonoBehaviour
     [SerializeField] CinemachineCamera defaultCamera;
     [SerializeField] CinemachineCamera zoomInCamera;
 
+    public Action onFireAction; 
+
     [Header("Character Input Values")]
     public Vector2 move;
     public Vector2 look;
     public bool jump;
+    public bool evade; // Evade 입력 추가
     public bool isZooming;
 
     [Header("Mouse Cursor Settings")]
@@ -51,8 +55,7 @@ public class CharacterInputs : MonoBehaviour
             playerInput.SwitchCurrentActionMap("Zoomed In Player Move");
 
             //CameraChange
-            zoomInCamera.Priority = 10;
-            defaultCamera.Priority = 0;
+            CameraController.Instance.ChangeCamera(zoomInCamera);
         }
         else
         {
@@ -60,9 +63,30 @@ public class CharacterInputs : MonoBehaviour
             playerInput.SwitchCurrentActionMap("Default Player Move");
 
             //CameraChange
-            defaultCamera.Priority = 10;
-            zoomInCamera.Priority = 0;
+            CameraController.Instance.ChangeCamera(defaultCamera);
         }
+    }
+
+    public void OnJump(InputValue value) //Default Action map -> Jump.
+    {
+        JumpInput(value.isPressed);
+    }
+
+    public void OnEvade(InputValue value) //Zoomed In Action Map -> Evade.
+    {
+        if (isZooming) // 줌인 상태에서만 Evade 작동
+        {
+            EvadeInput(value.isPressed);
+        }
+        else
+        {
+            JumpInput(value.isPressed); // 줌아웃 상태에서는 기본 점프
+        }
+    }
+
+    public void OnFire(InputValue value)
+    {
+        onFireAction?.Invoke();
     }
 
 #endif
@@ -75,6 +99,16 @@ public class CharacterInputs : MonoBehaviour
     public void LookInput(Vector2 newLookDirection)
     {
         look = newLookDirection;
+    }
+
+    public void JumpInput(bool newJumpState)
+    {
+        jump = newJumpState;
+    }
+
+    public void EvadeInput(bool newEvadeState)
+    {
+        evade = newEvadeState;
     }
 
     private void OnApplicationFocus(bool hasFocus)
