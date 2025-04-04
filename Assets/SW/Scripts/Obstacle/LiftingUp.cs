@@ -72,6 +72,7 @@ public class LiftingUp : MonoBehaviour
             if (_targetPos[1].position.y - _player.transform.position.y < 0.1)
             {
                 _impulseSource.GenerateImpulse();
+                _player.transform.position = _targetPos[1].position + Vector3.forward * -2;
                 break;
             }
             yield return null;
