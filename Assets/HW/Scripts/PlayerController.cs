@@ -498,7 +498,7 @@ public class PlayerController : MonoBehaviour
             _animator.SetTrigger(_animIDEvade);
             _isEvading = true;
             _evadeTimeoutDelta = EvadeTimeout;
-            _evadeTimeRemaining = 0.4f;
+            _evadeTimeRemaining = 0.6f;
 
             // 플레이어의 앞은 카메라 앞과 일치
             Vector3 cameraForward = _mainCamera.transform.forward;
@@ -513,11 +513,9 @@ public class PlayerController : MonoBehaviour
 
             if (inputDirection.magnitude > 0.1f)
             {
-                // 입력 방향을 카메라 기준으로 변환
                 float angle = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg;
-                float relativeAngle = angle; // 입력 방향의 절대 각도 사용
+                float relativeAngle = angle;
 
-                // 4방향으로 매핑 (카메라 앞을 기준으로)
                 if (relativeAngle >= -45f && relativeAngle <= 45f) // 앞 (W)
                     _evadeDirection = cameraForward;
                 else if (relativeAngle >= 135f || relativeAngle <= -135f) // 뒤 (S)
@@ -527,12 +525,15 @@ public class PlayerController : MonoBehaviour
                 else if (relativeAngle < -45f && relativeAngle > -135f) // 왼쪽 (A)
                     _evadeDirection = -cameraRight;
             }
-            else // 입력 없으면 기본적으로 뒤로 회피
+            else // 입력 없으면 뒤로 회피
             {
                 _evadeDirection = -cameraForward;
             }
 
-            Debug.Log($"Evade Direction: {_evadeDirection}, Input: {_input.move}");
+            // 회피 시작 시 약간 공중에 뜨게 설정
+            _verticalVelocity = Mathf.Sqrt(1f * -2f * Gravity); // 0.3m 정도 뜨게 (JumpHeight보다 작게)
+
+            Debug.Log($"Evade Started! Direction: {_evadeDirection}, Vertical Velocity: {_verticalVelocity}");
         }
     }
 
