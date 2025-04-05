@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class LiftingUp : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class LiftingUp : MonoBehaviour
     private GameObject _player;
     private Transform[] _targetPos;
     private CinemachineImpulseSource _impulseSource;
+    private bool _isMoving;
 
     private void Start()
     {
@@ -16,9 +18,9 @@ public class LiftingUp : MonoBehaviour
 
     void Init()
     {
-        _targetPos = new Transform[2];
+        _targetPos = new Transform[3];
         //cinemachineCamera = GetComponentInChildren<CinemachineCamera>().gameObject;
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 3; i++)
         {
             _targetPos[i] = transform.GetChild(i);
         }
@@ -28,9 +30,10 @@ public class LiftingUp : MonoBehaviour
     // 플레이어가 가까이와서 줄에 걸렸을 때
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.tag == "Player" && !_isMoving)
         {
             _player = other.gameObject;
+            _isMoving = true;
             StartCoroutine(PlayerUp_CO());
         }
     }
@@ -58,29 +61,41 @@ public class LiftingUp : MonoBehaviour
         //    yield return null;
         //}
 
-        print("Forward Up");
-
-        _player.transform.position = _targetPos[0].position;
-
         Vector3 target2Dir = (_targetPos[1].position - _targetPos[0].position).normalized;
 
         _impulseSource.GenerateImpulse();
 
         while (true)
         {
-            _player.transform.position += target2Dir * Time.deltaTime * 2;
+            _player.transform.position += target2Dir * Time.deltaTime * 10;
             if (_targetPos[1].position.y - _player.transform.position.y < 0.1)
             {
-                _impulseSource.GenerateImpulse();
-                _player.transform.position = _targetPos[1].position + Vector3.forward * -2;
+                //_impulseSource.GenerateImpulse();
+                print("hello");
                 break;
             }
             yield return null;
         }
 
+        Vector3 target3Dir = (_targetPos[2].position - _targetPos[1].position).normalized;
+
+        while (true)
+        {
+            _player.transform.position += target3Dir * Time.deltaTime * 10;
+            if (_player.transform.position.z - _targetPos[2].position.z < 0.1)
+            {
+                //_impulseSource.GenerateImpulse();
+                print("hello3");
+                break;
+            }
+            yield return null;
+        }
+
+        _player.transform.position = _targetPos[2].position;
 
         cinemachineCamera.SetActive(false);
         _player.GetComponent<PlayerController>().Gravity = initGravity;
-        _player.GetComponent<PlayerController>().SetMoveable(false); ;
+        _player.GetComponent<PlayerController>().SetMoveable(false);
+        _isMoving = false;
     }
 }
