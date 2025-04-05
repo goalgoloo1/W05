@@ -28,4 +28,17 @@ public class CameraController : MonoBehaviour
 
         prevCamera = newCamera;
     }
+
+    public void ReturnCamera(CinemachineCamera currentCamera)
+    {
+        if(prevCamera != null)
+        {
+            prevCamera.Priority = 10;
+            currentCamera.Priority = 0;
+        }
+        else
+        {
+
+        }
+    }
 }

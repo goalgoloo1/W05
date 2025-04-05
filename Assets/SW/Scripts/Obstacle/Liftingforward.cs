@@ -70,7 +70,7 @@ public class Liftingforward : MonoBehaviour
             if (_targetPos[1].position.z - _player.transform.position.z > 0.1)
             {
                 _impulseSource.GenerateImpulse();
-                _player.transform.position = _targetPos[1].position + Vector3.forward * -30.5f;
+                _player.transform.position = _targetPos[1].position + Vector3.forward;
                 break;
             }
             yield return null;
