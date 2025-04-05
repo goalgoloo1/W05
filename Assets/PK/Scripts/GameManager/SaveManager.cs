@@ -29,7 +29,6 @@ public class SaveManager : MonoBehaviour
             return;
         }
         _instance = this;
-        DontDestroyOnLoad(gameObject);
 
         // Set path of saving
         saveFilePath = Path.Combine(Application.persistentDataPath, "saveData.json");
@@ -69,7 +68,7 @@ public class SaveManager : MonoBehaviour
                 currentData = new PlayerData(); // 로드 실패 시 기본값
             }
         }
-        
+
         else
         {
             Debug.LogWarning("Save file not found at: " + saveFilePath);

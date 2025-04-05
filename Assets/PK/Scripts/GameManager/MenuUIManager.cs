@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ public class MenuUIManager : MonoBehaviour
     [SerializeField] RectTransform[] menuFrames;
     [SerializeField] Slider[] soundKnobs;
     [SerializeField] TextMeshProUGUI[] soundPercentage;
+    [SerializeField] LevelSelectGroup levelSelectGroup;
 
     [Header("Fade Frames")]
     [SerializeField] GameObject fadeFrames;
@@ -22,7 +24,7 @@ public class MenuUIManager : MonoBehaviour
         Instance = this;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // Show the menu content of Scene
     public void ShowStageSelect(int index)
     {
         for(int i = 0; i < menuFrames.Length; i++)
@@ -36,6 +38,12 @@ public class MenuUIManager : MonoBehaviour
         }
 
         AudioManager.Instance.PlayClip(null, "UI_Default");
+    }
+
+    // Let Select group to add its content based on gamemanager Content
+    public void InitStageSelectGroup(List<string> stages)
+    {
+        levelSelectGroup.Initialize(stages);
     }
 
     public void SetValueOfKnob(int index)

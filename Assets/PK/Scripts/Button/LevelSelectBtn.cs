@@ -41,11 +41,13 @@ public class LevelSelectBtn : MonoBehaviour
     {
         AudioManager.Instance.PlayClip(null, "UI_Confirm");
         StartCoroutine(MenuUIManager.Instance.SetFadeImage(false));
+        yield return new WaitForSeconds(0.4f);
+        StartCoroutine(BGMManager.Instance.SetFadeVolume(false));
+        yield return new WaitForSeconds(1.2f);
 
-        yield return new WaitForSeconds(1.6f);
         Debug.Log("Going to stage: " + stageToGo);
 
         // Check integrity of scene
-        SceneManager.LoadScene(stageToGo);
+        GameManager.Instance.GoToStage(stageToGo);
     }
 }
