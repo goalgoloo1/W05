@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -114,6 +115,7 @@ public class PlayerController : MonoBehaviour
         _playerInput = GetComponent<PlayerInput>();
         _mainCamera = Camera.main.gameObject;
         _hasAnimator = TryGetComponent(out _animator); //may be by inspector?
+        playerManager = PlayerManager.Instance;
 
         AssignAnimationIDs();
 
@@ -194,10 +196,6 @@ public class PlayerController : MonoBehaviour
         if (_evadeTimeoutDelta >= 0.0f) // 회피 대기시간 감소
         {
             _evadeTimeoutDelta -= Time.deltaTime;
-        }
-        if (fireTimeOutDelta >= 0f)
-        {
-            fireTimeOutDelta -= Time.deltaTime;
         }
     }
 
@@ -498,14 +496,13 @@ public class PlayerController : MonoBehaviour
 
     private void PerformEvade()
     {
-        if (!_isEvading && _evadeTimeoutDelta <= 0.0f)
+        if (!_isEvading && _evadeTimeoutDelta <= 0.0f && Grounded)
         {
             _animator.SetTrigger(_animIDEvade);
             _isEvading = true;
             _evadeTimeoutDelta = EvadeTimeout;
             _evadeTimeRemaining = 0.6f;
 
-            // 플레이어의 앞은 카메라 앞과 일치
             Vector3 cameraForward = _mainCamera.transform.forward;
             cameraForward.y = 0;
             cameraForward = cameraForward.normalized;
@@ -513,7 +510,6 @@ public class PlayerController : MonoBehaviour
             cameraRight.y = 0;
             cameraRight = cameraRight.normalized;
 
-            // 입력 방향 가져오기
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
             if (inputDirection.magnitude > 0.1f)
@@ -521,24 +517,97 @@ public class PlayerController : MonoBehaviour
                 float angle = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg;
                 float relativeAngle = angle;
 
-                if (relativeAngle >= -45f && relativeAngle <= 45f) // 앞 (W)
+                if (relativeAngle >= -45f && relativeAngle <= 45f)
                     _evadeDirection = cameraForward;
-                else if (relativeAngle >= 135f || relativeAngle <= -135f) // 뒤 (S)
+                else if (relativeAngle >= 135f || relativeAngle <= -135f)
                     _evadeDirection = -cameraForward;
-                else if (relativeAngle > 45f && relativeAngle < 135f) // 오른쪽 (D)
+                else if (relativeAngle > 45f && relativeAngle < 135f)
                     _evadeDirection = cameraRight;
-                else if (relativeAngle < -45f && relativeAngle > -135f) // 왼쪽 (A)
+                else if (relativeAngle < -45f && relativeAngle > -135f)
                     _evadeDirection = -cameraRight;
             }
-            else // 입력 없으면 뒤로 회피
-            {
-                _evadeDirection = -cameraForward;
-            }
 
-            // 회피 시작 시 약간 공중에 뜨게 설정
-            _verticalVelocity = Mathf.Sqrt(1f * -2f * Gravity); // 0.3m 정도 뜨게 (JumpHeight보다 작게)
-
+            _verticalVelocity = Mathf.Sqrt(1f * -2f * Gravity);
             Debug.Log($"Evade Started! Direction: {_evadeDirection}, Vertical Velocity: {_verticalVelocity}");
+
+            StartCoroutine(EnableEvadeRange());
+        }
+    }
+
+    [SerializeField] GameObject evadeRange;
+    public float evadeRangeLastingTime = 0.2f;
+    public bool evadeSuccess = false;
+
+    private IEnumerator EnableEvadeRange()
+    {
+        evadeSuccess = false;
+        evadeRange.SetActive(true);
+        yield return new WaitForSecondsRealtime(evadeRangeLastingTime);
+        evadeRange.SetActive(false);
+    }
+
+    [SerializeField] CinemachineCamera enemyTrackCamera;
+    [SerializeField] CinemachineTargetGroup targetGroup;
+    public float bulletTimeTime = 3f;
+
+    public void OnEvadeSuccess(GameObject enemyBullet)
+    {
+        GameObject enemyObject = enemyBullet.GetComponent<BulletMovement>().enemyShooter; //get shooter of the bullet.
+
+        //ChangeCamera
+        //CameraController.Instance.ChangeCamera(enemyTrackCamera);
+        //targetGroup.AddMember(enemyObject.transform, 0, 1);
+
+        StartCoroutine(OnEvadeSuccessCoroutine(enemyObject));
+    }
+
+    private IEnumerator OnEvadeSuccessCoroutine(GameObject enemyObject)
+    {
+        Time.timeScale = 0.4f;
+        _controller.detectCollisions = false;
+
+        yield return new WaitForSecondsRealtime(bulletTimeTime);
+
+        //targetGroup.RemoveMember(enemyObject.transform);
+        Time.timeScale = 1f;
+
+        _controller.detectCollisions = true;
+
+        //CameraController.Instance.ReturnCamera(enemyTrackCamera);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Bullet"))
+        {
+            if (evadeSuccess == false)
+            {
+                evadeSuccess = true;
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Bullet"))
+        {
+            if (evadeSuccess == false)
+            {
+                evadeSuccess = true;
+                OnEvadeSuccess(other.gameObject);
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Bullet"))
+        {
+            if (evadeSuccess == false)
+            {
+                evadeSuccess = true;
+                OnEvadeSuccess(other.gameObject);
+            }
         }
     }
 
@@ -549,14 +618,11 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Transform gunEdgeTransform;
     [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private PlayerManager playerManager;
     [SerializeField] CinemachineCamera zoomInCamera;
-    bool fireable;
-
-    public float FireCoolDown = 1f;
-    public float fireTimeOutDelta = 0f;
     public void Fire()
     {
-        if(fireTimeOutDelta <= 0f)
+        if (playerManager.fireCoolDownDelta <= 0f && !_isMoveDisabled && playerManager.remainingBullet > 0)
         {
             CinemachineThirdPersonAim cinemachineAim = zoomInCamera.GetComponent<CinemachineThirdPersonAim>();
 
@@ -565,7 +631,7 @@ public class PlayerController : MonoBehaviour
             GameObject playerBullet = Instantiate(bulletPrefab, gunEdgeTransform.position, Quaternion.identity);
             playerBullet.GetComponent<PlayerBulletMovement>().SetTargetPosition(aimingTarget);
 
-            fireTimeOutDelta = FireCoolDown;
+            playerManager.Shot();
         }
 
     }
