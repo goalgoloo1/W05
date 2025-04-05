@@ -1584,6 +1584,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 499434001}
     - target: {fileID: 2685064413996966963, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: bulletTimeTime
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2685064413996966963, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: enemyTrackCamera
       value: 
       objectReference: {fileID: 1344626584}
@@ -1634,6 +1638,10 @@ PrefabInstance:
     - target: {fileID: 5276304948148212765, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: field of view
       value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 8853149398719285695, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: m_UpdateMode
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
