@@ -503,7 +503,6 @@ public class PlayerController : MonoBehaviour
             _evadeTimeoutDelta = EvadeTimeout;
             _evadeTimeRemaining = 0.6f;
 
-            // 플레이어의 앞은 카메라 앞과 일치
             Vector3 cameraForward = _mainCamera.transform.forward;
             cameraForward.y = 0;
             cameraForward = cameraForward.normalized;
@@ -511,7 +510,6 @@ public class PlayerController : MonoBehaviour
             cameraRight.y = 0;
             cameraRight = cameraRight.normalized;
 
-            // 입력 방향 가져오기
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
             if (inputDirection.magnitude > 0.1f)
@@ -519,26 +517,24 @@ public class PlayerController : MonoBehaviour
                 float angle = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg;
                 float relativeAngle = angle;
 
-                if (relativeAngle >= -45f && relativeAngle <= 45f) // 앞 (W)
+                if (relativeAngle >= -45f && relativeAngle <= 45f)
                     _evadeDirection = cameraForward;
-                else if (relativeAngle >= 135f || relativeAngle <= -135f) // 뒤 (S)
+                else if (relativeAngle >= 135f || relativeAngle <= -135f)
                     _evadeDirection = -cameraForward;
-                else if (relativeAngle > 45f && relativeAngle < 135f) // 오른쪽 (D)
+                else if (relativeAngle > 45f && relativeAngle < 135f)
                     _evadeDirection = cameraRight;
-                else if (relativeAngle < -45f && relativeAngle > -135f) // 왼쪽 (A)
+                else if (relativeAngle < -45f && relativeAngle > -135f)
                     _evadeDirection = -cameraRight;
             }
 
-            // 회피 시작 시 약간 공중에 뜨게 설정
-            _verticalVelocity = Mathf.Sqrt(1f * -2f * Gravity); // 0.3m 정도 뜨게 (JumpHeight보다 작게)
-
+            _verticalVelocity = Mathf.Sqrt(1f * -2f * Gravity);
             Debug.Log($"Evade Started! Direction: {_evadeDirection}, Vertical Velocity: {_verticalVelocity}");
 
             StartCoroutine(EnableEvadeRange());
         }
     }
 
-    [SerializeField] GameObject evadeRange; //evaderange.
+    [SerializeField] GameObject evadeRange;
     public float evadeRangeLastingTime = 0.2f;
     public bool evadeSuccess = false;
 
@@ -546,18 +542,15 @@ public class PlayerController : MonoBehaviour
     {
         evadeSuccess = false;
         evadeRange.SetActive(true);
-
         yield return new WaitForSecondsRealtime(evadeRangeLastingTime);
-
         evadeRange.SetActive(false);
-        evadeSuccess = false;
     }
 
     [SerializeField] CinemachineCamera enemyTrackCamera;
     [SerializeField] CinemachineTargetGroup targetGroup;
     public float bulletTimeTime = 1f;
 
-    private void OnEvadeSuccess(GameObject enemyBullet)
+    public void OnEvadeSuccess(GameObject enemyBullet)
     {
         GameObject enemyObject = enemyBullet.GetComponent<BulletMovement>().enemyShooter; //get shooter of the bullet.
 
