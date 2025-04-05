@@ -34,6 +34,15 @@ public class CharacterInputs : MonoBehaviour
     }
 
 
+    [SerializeField] private float smoothSpeed = 0.1f;
+    private Vector2 rawLook; // 원시 입력값 임시 저장
+
+    void Update()
+    {
+        look = Vector2.Lerp(look, rawLook, smoothSpeed * Time.deltaTime);
+    }
+
+
 #if ENABLE_INPUT_SYSTEM
     public void OnMove(InputValue value)
     {
@@ -47,6 +56,7 @@ public class CharacterInputs : MonoBehaviour
             LookInput(value.Get<Vector2>());
         }
     }
+
 
     public void OnZoom()
     {
@@ -99,7 +109,7 @@ public class CharacterInputs : MonoBehaviour
 
     public void LookInput(Vector2 newLookDirection)
     {
-        look = newLookDirection;
+        rawLook = newLookDirection;
     }
 
     public void JumpInput(bool newJumpState)
