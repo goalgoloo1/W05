@@ -114,6 +114,7 @@ public class PlayerController : MonoBehaviour
         _playerInput = GetComponent<PlayerInput>();
         _mainCamera = Camera.main.gameObject;
         _hasAnimator = TryGetComponent(out _animator); //may be by inspector?
+        playerManager = PlayerManager.Instance;
 
         AssignAnimationIDs();
 
@@ -498,7 +499,7 @@ public class PlayerController : MonoBehaviour
 
     private void PerformEvade()
     {
-        if (!_isEvading && _evadeTimeoutDelta <= 0.0f)
+        if (!_isEvading && _evadeTimeoutDelta <= 0.0f && Grounded)
         {
             _animator.SetTrigger(_animIDEvade);
             _isEvading = true;
@@ -530,10 +531,6 @@ public class PlayerController : MonoBehaviour
                 else if (relativeAngle < -45f && relativeAngle > -135f) // 왼쪽 (A)
                     _evadeDirection = -cameraRight;
             }
-            else // 입력 없으면 뒤로 회피
-            {
-                _evadeDirection = -cameraForward;
-            }
 
             // 회피 시작 시 약간 공중에 뜨게 설정
             _verticalVelocity = Mathf.Sqrt(1f * -2f * Gravity); // 0.3m 정도 뜨게 (JumpHeight보다 작게)
@@ -549,14 +546,15 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Transform gunEdgeTransform;
     [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private PlayerManager playerManager;
     [SerializeField] CinemachineCamera zoomInCamera;
-    bool fireable;
+    //bool fireable;
 
     public float FireCoolDown = 1f;
     public float fireTimeOutDelta = 0f;
     public void Fire()
     {
-        if(fireTimeOutDelta <= 0f)
+        if (playerManager.fireCoolDownDelta <= 0f && !_isMoveDisabled && playerManager.remainingBullet > 0)
         {
             CinemachineThirdPersonAim cinemachineAim = zoomInCamera.GetComponent<CinemachineThirdPersonAim>();
 
@@ -565,7 +563,7 @@ public class PlayerController : MonoBehaviour
             GameObject playerBullet = Instantiate(bulletPrefab, gunEdgeTransform.position, Quaternion.identity);
             playerBullet.GetComponent<PlayerBulletMovement>().SetTargetPosition(aimingTarget);
 
-            fireTimeOutDelta = FireCoolDown;
+            playerManager.Shot();
         }
 
     }
