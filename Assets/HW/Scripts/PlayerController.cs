@@ -117,6 +117,7 @@ public class PlayerController : MonoBehaviour
         _evadeTimeoutDelta = EvadeTimeout; // Evade 쿨다운 초기화
 
         _input.onFireAction += Fire;
+        _input.onEvadeAction += PerformEvade;
     }
 
     private void AssignAnimationIDs()
@@ -440,12 +441,12 @@ public class PlayerController : MonoBehaviour
                 _verticalVelocity = -2f;
             }
 
-            // 줌인 상태에서 Evade 체크
-            if (_input.isZooming && _input.evade && _evadeTimeoutDelta <= 0.0f)
-            {
-                PerformEvade();
-                _input.evade = false; // Evade 입력 즉시 리셋
-            }
+            //// 줌인 상태에서 Evade 체크
+            //if (_input.isZooming && _input.evade && _evadeTimeoutDelta <= 0.0f)
+            //{
+            //    PerformEvade();
+            //    _input.evade = false; // Evade 입력 즉시 리셋
+            //}
             // 기본 점프
             else if (_input.jump && _jumpTimeoutDelta <= 0.0f)
             {
@@ -455,11 +456,11 @@ public class PlayerController : MonoBehaviour
                     _animator.SetBool(_animIDJump, true);
                 }
                 _input.jump = false;
-                _input.evade = false;
+                //_input.evade = false;
             }
             else
             {
-                _input.evade = false;
+                //_input.evade = false;
             }
 
 
@@ -467,7 +468,7 @@ public class PlayerController : MonoBehaviour
         else //공중
         {
             _jumpTimeoutDelta = JumpTimeout;
-            _evadeTimeoutDelta = EvadeTimeout;
+            //_evadeTimeoutDelta = EvadeTimeout;
 
             if (_fallTimeoutDelta >= 0.0f)
             {
@@ -487,10 +488,10 @@ public class PlayerController : MonoBehaviour
             _verticalVelocity += Gravity * Time.deltaTime;
         }
 
-        if (_isEvading && Grounded && _evadeTimeRemaining <= 0.0f)
-        {
-            _isEvading = false; // 지면 착지 후 회피 종료
-        }
+        //if (_isEvading && Grounded && _evadeTimeRemaining <= 0.0f)
+        //{
+        //    _isEvading = false; // 지면 착지 후 회피 종료
+        //}
     }
 
 
