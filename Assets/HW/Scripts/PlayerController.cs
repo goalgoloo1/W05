@@ -197,10 +197,6 @@ public class PlayerController : MonoBehaviour
         {
             _evadeTimeoutDelta -= Time.deltaTime;
         }
-        if (fireTimeOutDelta >= 0f)
-        {
-            fireTimeOutDelta -= Time.deltaTime;
-        }
     }
 
     private void LateUpdate()
@@ -537,6 +533,8 @@ public class PlayerController : MonoBehaviour
             _verticalVelocity = Mathf.Sqrt(1f * -2f * Gravity); // 0.3m 정도 뜨게 (JumpHeight보다 작게)
 
             Debug.Log($"Evade Started! Direction: {_evadeDirection}, Vertical Velocity: {_verticalVelocity}");
+
+            StartCoroutine(EnableEvadeRange());
         }
     }
 
@@ -552,10 +550,12 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSecondsRealtime(evadeRangeLastingTime);
 
         evadeRange.SetActive(false);
+        evadeSuccess = false;
     }
 
     [SerializeField] CinemachineCamera enemyTrackCamera;
     [SerializeField] CinemachineTargetGroup targetGroup;
+    public float bulletTimeTime = 1f;
 
     private void OnEvadeSuccess(GameObject enemyBullet)
     {
@@ -563,19 +563,33 @@ public class PlayerController : MonoBehaviour
 
         //ChangeCamera
         CameraController.Instance.ChangeCamera(enemyTrackCamera);
-        
+        targetGroup.AddMember(enemyObject.transform, 0, 1);
+
+        StartCoroutine(OnEvadeSuccessCoroutine(enemyObject));
     }
 
-    //private void OnTriggerStay(Collider other)
-    //{
-    //    if (other.CompareTag("Bullet"))
-    //    {
-    //        if(evadeSuccess == false)
-    //        {
-    //            evadeSuccess = true;
-    //        }
-    //    }
-    //}
+    private IEnumerator OnEvadeSuccessCoroutine(GameObject enemyObject)
+    {
+        Time.timeScale = 0.3f;
+
+        yield return new WaitForSecondsRealtime(bulletTimeTime);
+
+        targetGroup.RemoveMember(enemyObject.transform);
+        Time.timeScale = 1f;
+
+        CameraController.Instance.ReturnCamera(enemyTrackCamera);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Bullet"))
+        {
+            if (evadeSuccess == false)
+            {
+                evadeSuccess = true;
+            }
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -610,10 +624,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private PlayerManager playerManager;
     [SerializeField] CinemachineCamera zoomInCamera;
-    //bool fireable;
-
-    public float FireCoolDown = 1f;
-    public float fireTimeOutDelta = 0f;
     public void Fire()
     {
         if (playerManager.fireCoolDownDelta <= 0f && !_isMoveDisabled && playerManager.remainingBullet > 0)

@@ -54,9 +54,9 @@ public class PlayerManager : MonoBehaviour
         fireCoolDownDelta = fireCoolDown;
         reloadingTimeDelta = 0f;
 
-        //Slider Settings.
-        reloadingTimeSlider.minValue = 0;
-        reloadingTimeSlider.maxValue = reloadingTime;
+        ////Slider Settings.
+        //reloadingTimeSlider.minValue = 0;
+        //reloadingTimeSlider.maxValue = reloadingTime;
     }
 
     private void Update()
