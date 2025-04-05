@@ -548,29 +548,32 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] CinemachineCamera enemyTrackCamera;
     [SerializeField] CinemachineTargetGroup targetGroup;
-    public float bulletTimeTime = 1f;
+    public float bulletTimeTime = 3f;
 
     public void OnEvadeSuccess(GameObject enemyBullet)
     {
         GameObject enemyObject = enemyBullet.GetComponent<BulletMovement>().enemyShooter; //get shooter of the bullet.
 
         //ChangeCamera
-        CameraController.Instance.ChangeCamera(enemyTrackCamera);
-        targetGroup.AddMember(enemyObject.transform, 0, 1);
+        //CameraController.Instance.ChangeCamera(enemyTrackCamera);
+        //targetGroup.AddMember(enemyObject.transform, 0, 1);
 
         StartCoroutine(OnEvadeSuccessCoroutine(enemyObject));
     }
 
     private IEnumerator OnEvadeSuccessCoroutine(GameObject enemyObject)
     {
-        Time.timeScale = 0.3f;
+        Time.timeScale = 0.4f;
+        _controller.detectCollisions = false;
 
         yield return new WaitForSecondsRealtime(bulletTimeTime);
 
         targetGroup.RemoveMember(enemyObject.transform);
         Time.timeScale = 1f;
 
-        CameraController.Instance.ReturnCamera(enemyTrackCamera);
+        _controller.detectCollisions = true;
+
+        //CameraController.Instance.ReturnCamera(enemyTrackCamera);
     }
 
     private void OnTriggerStay(Collider other)
