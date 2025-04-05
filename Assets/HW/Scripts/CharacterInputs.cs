@@ -14,7 +14,8 @@ public class CharacterInputs : MonoBehaviour
     [SerializeField] CinemachineCamera defaultCamera;
     [SerializeField] CinemachineCamera zoomInCamera;
 
-    public Action onFireAction; 
+    public Action onFireAction;
+    public Action onEvadeAction;
 
     [Header("Character Input Values")]
     public Vector2 move;
@@ -76,7 +77,7 @@ public class CharacterInputs : MonoBehaviour
     {
         if (isZooming) // 줌인 상태에서만 Evade 작동
         {
-            EvadeInput(value.isPressed);
+            onEvadeAction?.Invoke();
         }
         else
         {
