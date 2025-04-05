@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -536,6 +537,63 @@ public class PlayerController : MonoBehaviour
             _verticalVelocity = Mathf.Sqrt(1f * -2f * Gravity); // 0.3m 정도 뜨게 (JumpHeight보다 작게)
 
             Debug.Log($"Evade Started! Direction: {_evadeDirection}, Vertical Velocity: {_verticalVelocity}");
+        }
+    }
+
+    [SerializeField] GameObject evadeRange; //evaderange.
+    public float evadeRangeLastingTime = 0.2f;
+    public bool evadeSuccess = false;
+
+    private IEnumerator EnableEvadeRange()
+    {
+        evadeSuccess = false;
+        evadeRange.SetActive(true);
+
+        yield return new WaitForSecondsRealtime(evadeRangeLastingTime);
+
+        evadeRange.SetActive(false);
+    }
+
+    [SerializeField] CinemachineCamera enemyTrackCamera;
+
+    private void OnEvadeSuccess(GameObject enemyBullet)
+    {
+        GameObject enemyObject = enemyBullet.GetComponent<BulletMovement>().enemyShooter; //get shooter of the bullet.
+
+    }
+
+    //private void OnTriggerStay(Collider other)
+    //{
+    //    if (other.CompareTag("Bullet"))
+    //    {
+    //        if(evadeSuccess == false)
+    //        {
+    //            evadeSuccess = true;
+    //        }
+    //    }
+    //}
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Bullet"))
+        {
+            if (evadeSuccess == false)
+            {
+                evadeSuccess = true;
+                OnEvadeSuccess(other.gameObject);
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Bullet"))
+        {
+            if (evadeSuccess == false)
+            {
+                evadeSuccess = true;
+                OnEvadeSuccess(other.gameObject);
+            }
         }
     }
 
