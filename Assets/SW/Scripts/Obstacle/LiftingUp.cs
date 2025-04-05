@@ -71,7 +71,6 @@ public class LiftingUp : MonoBehaviour
             if (_targetPos[1].position.y - _player.transform.position.y < 0.1)
             {
                 //_impulseSource.GenerateImpulse();
-                print("hello");
                 break;
             }
             yield return null;
@@ -85,7 +84,6 @@ public class LiftingUp : MonoBehaviour
             if (_player.transform.position.z - _targetPos[2].position.z < 0.1)
             {
                 //_impulseSource.GenerateImpulse();
-                print("hello3");
                 break;
             }
             yield return null;
