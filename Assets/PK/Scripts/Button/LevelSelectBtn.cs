@@ -32,6 +32,7 @@ public class LevelSelectBtn : MonoBehaviour
     // Update is called once per frame
     void GoToStage()
     {
+        AudioManager.Instance.PlayClip(null, "UI_Confirm");
         Debug.Log("Going to stage: " + stageToGo);
     }
 }

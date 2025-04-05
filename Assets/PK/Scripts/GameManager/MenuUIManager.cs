@@ -24,8 +24,6 @@ public class MenuUIManager : MonoBehaviour
     [SerializeField] Slider[] soundKnobs;
     [SerializeField] TextMeshProUGUI[] soundPercentage;
 
-    //[SerializeField] GameObject 
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void ShowStageSelect(int index)
     {
@@ -38,17 +36,26 @@ public class MenuUIManager : MonoBehaviour
                 );
             }
         }
+
+        AudioManager.Instance.PlayClip(null, "UI_Default");
     }
 
     public void SetValueOfKnob(int index)
     {
         soundPercentage[index].text =
         Math.Round(soundKnobs[index].value * 100) + "%";
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        switch (index)
+        {
+            case 0:
+                BGMManager.Instance.SetVolume(soundKnobs[index].value);
+                break;
+            case 1:
+                AudioManager.Instance.SetVolume(soundKnobs[index].value);
+                break;
+            default:
+                Debug.LogError("There are no valid value of it.");
+                break;
+        }
     }
 }
