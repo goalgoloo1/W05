@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,23 +7,20 @@ using UnityEngine.UI;
 public class MenuUIManager : MonoBehaviour
 {
     private static MenuUIManager _instance;
-    public static MenuUIManager Instance // if there are no Menu UI manager on this game, add
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                GameObject go = new GameObject("MenuUIManager");
-                _instance = go.AddComponent<MenuUIManager>();
-                DontDestroyOnLoad(go); // Will be conserved when scene changes
-            }
-            return _instance;
-        }
-    }
+    public static MenuUIManager Instance;
 
     [SerializeField] RectTransform[] menuFrames;
     [SerializeField] Slider[] soundKnobs;
     [SerializeField] TextMeshProUGUI[] soundPercentage;
+
+    [Header("Fade Frames")]
+    [SerializeField] GameObject fadeFrames;
+    private float fadeDuration = 1f;
+
+    void Start()
+    {
+        Instance = this;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void ShowStageSelect(int index)
@@ -56,6 +54,43 @@ public class MenuUIManager : MonoBehaviour
             default:
                 Debug.LogError("There are no valid value of it.");
                 break;
+        }
+    }
+
+    public IEnumerator SetFadeImage(bool fadeIn)
+    {
+        if (fadeFrames == null) yield break;
+
+        if (!fadeIn)
+        {
+            fadeFrames.SetActive(true);
+        }
+
+        float targetAlpha = fadeIn ? 0 : 1; // if it is intended to do fade in, set as 0
+        float startAlpha = fadeIn ? 1 : 0;
+
+        Image fadeImage = fadeFrames.GetComponent<Image>();
+        Color imageColor = fadeImage.color;
+        float elapsedTime = 0f;
+        
+        while (elapsedTime < fadeDuration)
+        {
+            float alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / fadeDuration);
+            imageColor.a = alpha;
+            fadeImage.color = imageColor;
+            elapsedTime += Time.deltaTime;
+            yield return null; // 다음 프레임까지 대기
+        }
+
+        // 최종 색상 설정
+        imageColor.a = targetAlpha;
+        fadeImage.color = imageColor;
+
+
+        // Fade 완료 후 비활성화 (페이드 인일 경우)
+        if (fadeIn)
+        {
+            fadeFrames.gameObject.SetActive(false);
         }
     }
 }

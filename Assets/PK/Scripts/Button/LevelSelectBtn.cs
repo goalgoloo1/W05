@@ -1,6 +1,7 @@
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class LevelSelectBtn : MonoBehaviour
 {
@@ -32,7 +33,15 @@ public class LevelSelectBtn : MonoBehaviour
     // Update is called once per frame
     void GoToStage()
     {
+        StartCoroutine(GoToStageCo());
+    }
+
+    IEnumerator GoToStageCo()
+    {
         AudioManager.Instance.PlayClip(null, "UI_Confirm");
+        StartCoroutine(MenuUIManager.Instance.SetFadeImage(false));
+
+        yield return new WaitForSeconds(1.6f);
         Debug.Log("Going to stage: " + stageToGo);
     }
 }
