@@ -31,12 +31,4 @@ public class PlayerTemp : MonoBehaviour
         rb.MovePosition(rb.position + moveInput * moveSpeed * Time.fixedDeltaTime);
     }
 
-    void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Bullet"))
-        {
-            // 충돌한 bullet 오브젝트 파괴
-            Destroy(gameObject);
-        }
-    }
 }
