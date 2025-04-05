@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Stage2
   m_EditorClassIdentifier: 
   CustomBlends:
-  - From: distanced third person camera
-    To: CinemachineCamera1_s2
+  - From: '**ANY CAMERA**'
+    To: CinemachineCamera2_s2
     Blend:
-      Style: 1
+      Style: 0
       Time: 1
       CustomCurve:
         serializedVersion: 2
@@ -24,10 +24,109 @@ MonoBehaviour:
         m_PreInfinity: 0
         m_PostInfinity: 0
         m_RotationOrder: 0
-  - From: distanced third person camera
-    To: CinemachineCamera2_s2
+  - From: CinemachineCamera4_s2
+    To: CinemachineCamera3_s2
     Blend:
-      Style: 1
+      Style: 2
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: CinemachineCamera5_s2
+    To: CinemachineCamera4_s2
+    Blend:
+      Style: 2
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: '**ANY CAMERA**'
+    To: CinemachineCamera5_s2
+    Blend:
+      Style: 0
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: '**ANY CAMERA**'
+    To: CinemachineCamera6_s2
+    Blend:
+      Style: 0
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: CinemachineCamera8_s2
+    To: CinemachineCamera7_s2
+    Blend:
+      Style: 2
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: CinemachineCamera9_s2
+    To: CinemachineCamera8_s2
+    Blend:
+      Style: 2
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: '**ANY CAMERA**'
+    To: CinemachineCamera9_s2
+    Blend:
+      Style: 0
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: '**ANY CAMERA**'
+    To: CinemachineCamera10_s2
+    Blend:
+      Style: 0
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: '**ANY CAMERA**'
+    To: CinemachineCamera11_s2
+    Blend:
+      Style: 0
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: '**ANY CAMERA**'
+    To: CinemachineCamera12_s2
+    Blend:
+      Style: 0
       Time: 0.5
       CustomCurve:
         serializedVersion: 2
@@ -36,18 +135,7 @@ MonoBehaviour:
         m_PostInfinity: 0
         m_RotationOrder: 0
   - From: CinemachineCamera2_s2
-    To: Third Person Aim Camera
-    Blend:
-      Style: 1
-      Time: 0.5
-      CustomCurve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 0
-        m_PostInfinity: 0
-        m_RotationOrder: 0
-  - From: distanced third person camera
-    To: CinemachineCamera3_s2
+    To: '**ANY CAMERA**'
     Blend:
       Style: 0
       Time: 0.5
@@ -58,7 +146,7 @@ MonoBehaviour:
         m_PostInfinity: 0
         m_RotationOrder: 0
   - From: CinemachineCamera3_s2
-    To: CinemachineCamera4_s2
+    To: '**ANY CAMERA**'
     Blend:
       Style: 0
       Time: 0.5
@@ -68,8 +156,52 @@ MonoBehaviour:
         m_PreInfinity: 0
         m_PostInfinity: 0
         m_RotationOrder: 0
-  - From: CinemachineCamera4_s2
-    To: CinemachineCamera5_s2
+  - From: CinemachineCamera6_s2
+    To: '**ANY CAMERA**'
+    Blend:
+      Style: 0
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: CinemachineCamera7_s2
+    To: '**ANY CAMERA**'
+    Blend:
+      Style: 0
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: CinemachineCamera10_s2
+    To: '**ANY CAMERA**'
+    Blend:
+      Style: 0
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: CinemachineCamera11_s2
+    To: '**ANY CAMERA**'
+    Blend:
+      Style: 0
+      Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: CinemachineCamera12_s2
+    To: '**ANY CAMERA**'
     Blend:
       Style: 0
       Time: 0.5

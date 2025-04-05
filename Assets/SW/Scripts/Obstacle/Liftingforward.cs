@@ -8,6 +8,7 @@ public class Liftingforward : MonoBehaviour
     private GameObject _player;
     private Transform[] _targetPos;
     private CinemachineImpulseSource _impulseSource;
+    [SerializeField] private Vector3 dir; 
 
     private void Start()
     {
@@ -38,7 +39,7 @@ public class Liftingforward : MonoBehaviour
     IEnumerator PlayerUp_CO()
     {
         float initGravity = _player.GetComponent<PlayerController>().Gravity;
-        _player.transform.forward = Vector3.back;
+        _player.transform.forward = dir;
         _player.GetComponent<PlayerController>().Gravity = 0;
         _player.GetComponent<PlayerController>().SetMoveable(true);
 
