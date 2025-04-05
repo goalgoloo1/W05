@@ -14,6 +14,6 @@ public class ReloadingTimeSlider : MonoBehaviour
     private void ChangeSliderValue(float currentValue, float maxValue)
     {
         reloadingTimeSlider.maxValue = maxValue;
-        reloadingTimeSlider.value = currentValue;
+        reloadingTimeSlider.value = maxValue - currentValue;
     }
 }
