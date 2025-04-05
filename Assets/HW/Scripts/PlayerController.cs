@@ -555,11 +555,15 @@ public class PlayerController : MonoBehaviour
     }
 
     [SerializeField] CinemachineCamera enemyTrackCamera;
+    [SerializeField] CinemachineTargetGroup targetGroup;
 
     private void OnEvadeSuccess(GameObject enemyBullet)
     {
         GameObject enemyObject = enemyBullet.GetComponent<BulletMovement>().enemyShooter; //get shooter of the bullet.
 
+        //ChangeCamera
+        CameraController.Instance.ChangeCamera(enemyTrackCamera);
+        
     }
 
     //private void OnTriggerStay(Collider other)
