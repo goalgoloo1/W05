@@ -55,6 +55,12 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Time required to pass before being able to evade again")]
     public float EvadeTimeout = 5.0f; // Evade 쿨다운
 
+    [Space(10)]
+    [Tooltip("Evade distance in meters")]
+    public float EvadeDistance = 2.0f; // 회피 이동 거리
+    [Tooltip("Evade speed multiplier")]
+    public float EvadeSpeedMultiplier = 1.5f; // 회피 속도 배수 (기본 속도에 곱해짐)
+
 
     [SerializeField] GameObject cameraFollowObject; //cameras will follow this obj that is on player gameobject.
     private CharacterController _controller;
@@ -117,6 +123,7 @@ public class PlayerController : MonoBehaviour
         _evadeTimeoutDelta = EvadeTimeout; // Evade 쿨다운 초기화
 
         _input.onFireAction += Fire;
+        _input.onEvadeAction += PerformEvade;
     }
 
     private void AssignAnimationIDs()
@@ -144,40 +151,47 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        if(_isMoveDisabled) //true. 움직일 수 없음.
+        if (_isMoveDisabled) // 움직일 수 없음
         {
-
+            return;
         }
-        else //false
+
+        if (_isEvading) // 회피 중일 때
         {
-            if (_isEvading)
+            _evadeTimeRemaining -= Time.deltaTime;
+
+            // 회피 중 이동 처리
+            float evadeSpeed = DefaultMoveSpeed * EvadeSpeedMultiplier; // 빠른 이동 속도
+            Vector3 evadeMove = _evadeDirection * evadeSpeed * Time.deltaTime;
+
+            // 수평 이동만 적용 (중력은 JumpAndGravity에서 처리)
+            _controller.Move(evadeMove + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+
+            if (_evadeTimeRemaining <= 0.0f && Grounded)
             {
-                _evadeTimeRemaining -= Time.deltaTime;
-                if (_evadeTimeRemaining <= 0.0f && Grounded)
-                {
-                    _isEvading = false; // 회피 종료
-                }
+                _isEvading = false; // 회피 종료
+                Debug.Log("Evade Ended!");
+            }
+        }
+        else // 일반 이동
+        {
+            if (_input.isZooming)
+            {
+                _animator.SetBool(_animIDZoom, true);
+                OnZoomMove();
             }
             else
             {
-                if (_input.isZooming)
-                {
-                    _animator.SetBool(_animIDZoom, true);
-                    OnZoomMove();
-                }
-                else
-                {
-                    _animator.SetBool(_animIDZoom, false);
-                    DefaultMove();
-                }
+                _animator.SetBool(_animIDZoom, false);
+                DefaultMove();
             }
         }
 
-        if (_jumpTimeoutDelta >= 0.0f) //점프 대기시간 감소
+        if (_jumpTimeoutDelta >= 0.0f) // 점프 대기시간 감소
         {
             _jumpTimeoutDelta -= Time.deltaTime;
         }
-        if (_evadeTimeoutDelta >= 0.0f) //회피 대기시간 감소
+        if (_evadeTimeoutDelta >= 0.0f) // 회피 대기시간 감소
         {
             _evadeTimeoutDelta -= Time.deltaTime;
         }
@@ -185,8 +199,6 @@ public class PlayerController : MonoBehaviour
         {
             fireTimeOutDelta -= Time.deltaTime;
         }
-
-
     }
 
     private void LateUpdate()
@@ -198,39 +210,44 @@ public class PlayerController : MonoBehaviour
 
     private void CameraRotation()
     {
-        if(_input.isZooming)
+        if(!_isMoveDisabled)
         {
-            // Pan/Tilt 입력 적용
-            float rotateY = _input.look.x;
-            float rotateX = _input.look.y;
+            if (_input.isZooming)
+            {
+                // Pan/Tilt 입력 적용
+                float rotateY = _input.look.x;
+                float rotateX = _input.look.y;
 
-            currentYRotation += rotateY;
-            currentXRotation -= rotateX;
-            currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
+                currentYRotation += rotateY;
+                currentXRotation -= rotateX;
+                currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
 
-            // cameraFollowObject만 회전, 플레이어 회전과 독립
-            cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
+                // cameraFollowObject만 회전, 플레이어 회전과 독립
+                cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
 
-            // cameraFollowObject의 월드 회전에서 Y축 값만 가져옴
-            float cameraYRotation = cameraFollowObject.transform.eulerAngles.y;
+                // cameraFollowObject의 월드 회전에서 Y축 값만 가져옴
+                float cameraYRotation = cameraFollowObject.transform.eulerAngles.y;
 
-            // 플레이어의 현재 회전에서 Y축만 업데이트
-            Vector3 playerRotation = transform.eulerAngles;
-            playerRotation.y = cameraYRotation;
-            transform.eulerAngles = playerRotation;
+                // 플레이어의 현재 회전에서 Y축만 업데이트
+                Vector3 playerRotation = transform.eulerAngles;
+                playerRotation.y = cameraYRotation;
+                transform.eulerAngles = playerRotation;
+            }
+            else
+            {
+                float rotateY = _input.look.x;
+                float rotateX = _input.look.y;
+
+                currentYRotation += rotateY;
+                currentXRotation -= rotateX;
+                currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
+
+                // cameraFollowObject만 회전, 플레이어 회전과 독립
+                cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
+            }
         }
-        else
-        {
-            float rotateY = _input.look.x;
-            float rotateX = _input.look.y;
 
-            currentYRotation += rotateY;
-            currentXRotation -= rotateX;
-            currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
 
-            // cameraFollowObject만 회전, 플레이어 회전과 독립
-            cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
-        }
 
     }
 
@@ -425,12 +442,12 @@ public class PlayerController : MonoBehaviour
 
     private void JumpAndGravity()
     {
-        if (Grounded) //땅에 있을 때
+        if (Grounded) // 땅에 있을 때
         {
-            _fallTimeoutDelta = FallTimeout; //낙하 전환시간은 초기치로 계속 초기화
+            _fallTimeoutDelta = FallTimeout;
 
-            if (_hasAnimator) //애니메이션 재생 없음.
-            { 
+            if (_hasAnimator)
+            {
                 _animator.SetBool(_animIDJump, false);
                 _animator.SetBool(_animIDFreeFall, false);
             }
@@ -440,34 +457,25 @@ public class PlayerController : MonoBehaviour
                 _verticalVelocity = -2f;
             }
 
-            // 줌인 상태에서 Evade 체크
-            if (_input.isZooming && _input.evade && _evadeTimeoutDelta <= 0.0f)
+            // 점프 쿨다운 감소 (Move()에서 처리하던 것을 여기로 이동)
+            if (_jumpTimeoutDelta >= 0.0f)
             {
-                PerformEvade();
-                _input.evade = false; // Evade 입력 즉시 리셋
+                _jumpTimeoutDelta -= Time.deltaTime;
             }
-            // 기본 점프
-            else if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+
+            if (_input.jump && _jumpTimeoutDelta <= 0.0f)
             {
+                Debug.Log("점프 실행 - Velocity: " + _verticalVelocity);
                 _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
                 if (_hasAnimator)
                 {
                     _animator.SetBool(_animIDJump, true);
                 }
-                _input.jump = false;
-                _input.evade = false;
             }
-            else
-            {
-                _input.evade = false;
-            }
-
-
         }
-        else //공중
+        else // 공중
         {
             _jumpTimeoutDelta = JumpTimeout;
-            _evadeTimeoutDelta = EvadeTimeout;
 
             if (_fallTimeoutDelta >= 0.0f)
             {
@@ -478,36 +486,59 @@ public class PlayerController : MonoBehaviour
                 _animator.SetBool(_animIDFreeFall, true);
             }
 
-            _input.jump = false;
-            _input.evade = false;
+            _input.jump = false; // 입력 리셋
         }
 
         if (_verticalVelocity < _terminalVelocity)
         {
             _verticalVelocity += Gravity * Time.deltaTime;
         }
-
-        if (_isEvading && Grounded && _evadeTimeRemaining <= 0.0f)
-        {
-            _isEvading = false; // 지면 착지 후 회피 종료
-        }
     }
 
 
     private void PerformEvade()
     {
-        if (!_isEvading && _evadeTimeoutDelta <= 0.0f) // 쿨타임이 끝난 경우에만 회피 시작
+        if (!_isEvading && _evadeTimeoutDelta <= 0.0f)
         {
             _animator.SetTrigger(_animIDEvade);
             _isEvading = true;
-            _evadeTimeoutDelta = EvadeTimeout; // 쿨타임 재설정
-            _evadeTimeRemaining = 0.3f; // 회피 동작 지속 시간 (조정 가능)
+            _evadeTimeoutDelta = EvadeTimeout;
+            _evadeTimeRemaining = 0.6f;
 
-            // 방향 계산
-            Vector3 moveDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-            _evadeDirection = moveDirection.normalized;
+            // 플레이어의 앞은 카메라 앞과 일치
+            Vector3 cameraForward = _mainCamera.transform.forward;
+            cameraForward.y = 0;
+            cameraForward = cameraForward.normalized;
+            Vector3 cameraRight = _mainCamera.transform.right;
+            cameraRight.y = 0;
+            cameraRight = cameraRight.normalized;
 
-            Debug.Log($"Evade Started! Timeout: {_evadeTimeoutDelta}, Remaining: {_evadeTimeRemaining}");
+            // 입력 방향 가져오기
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+            if (inputDirection.magnitude > 0.1f)
+            {
+                float angle = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg;
+                float relativeAngle = angle;
+
+                if (relativeAngle >= -45f && relativeAngle <= 45f) // 앞 (W)
+                    _evadeDirection = cameraForward;
+                else if (relativeAngle >= 135f || relativeAngle <= -135f) // 뒤 (S)
+                    _evadeDirection = -cameraForward;
+                else if (relativeAngle > 45f && relativeAngle < 135f) // 오른쪽 (D)
+                    _evadeDirection = cameraRight;
+                else if (relativeAngle < -45f && relativeAngle > -135f) // 왼쪽 (A)
+                    _evadeDirection = -cameraRight;
+            }
+            else // 입력 없으면 뒤로 회피
+            {
+                _evadeDirection = -cameraForward;
+            }
+
+            // 회피 시작 시 약간 공중에 뜨게 설정
+            _verticalVelocity = Mathf.Sqrt(1f * -2f * Gravity); // 0.3m 정도 뜨게 (JumpHeight보다 작게)
+
+            Debug.Log($"Evade Started! Direction: {_evadeDirection}, Vertical Velocity: {_verticalVelocity}");
         }
     }
 
