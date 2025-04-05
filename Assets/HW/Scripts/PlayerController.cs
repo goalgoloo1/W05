@@ -210,39 +210,44 @@ public class PlayerController : MonoBehaviour
 
     private void CameraRotation()
     {
-        if(_input.isZooming)
+        if(_isMoveDisabled)
         {
-            // Pan/Tilt 입력 적용
-            float rotateY = _input.look.x;
-            float rotateX = _input.look.y;
+            if (_input.isZooming)
+            {
+                // Pan/Tilt 입력 적용
+                float rotateY = _input.look.x;
+                float rotateX = _input.look.y;
 
-            currentYRotation += rotateY;
-            currentXRotation -= rotateX;
-            currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
+                currentYRotation += rotateY;
+                currentXRotation -= rotateX;
+                currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
 
-            // cameraFollowObject만 회전, 플레이어 회전과 독립
-            cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
+                // cameraFollowObject만 회전, 플레이어 회전과 독립
+                cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
 
-            // cameraFollowObject의 월드 회전에서 Y축 값만 가져옴
-            float cameraYRotation = cameraFollowObject.transform.eulerAngles.y;
+                // cameraFollowObject의 월드 회전에서 Y축 값만 가져옴
+                float cameraYRotation = cameraFollowObject.transform.eulerAngles.y;
 
-            // 플레이어의 현재 회전에서 Y축만 업데이트
-            Vector3 playerRotation = transform.eulerAngles;
-            playerRotation.y = cameraYRotation;
-            transform.eulerAngles = playerRotation;
+                // 플레이어의 현재 회전에서 Y축만 업데이트
+                Vector3 playerRotation = transform.eulerAngles;
+                playerRotation.y = cameraYRotation;
+                transform.eulerAngles = playerRotation;
+            }
+            else
+            {
+                float rotateY = _input.look.x;
+                float rotateX = _input.look.y;
+
+                currentYRotation += rotateY;
+                currentXRotation -= rotateX;
+                currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
+
+                // cameraFollowObject만 회전, 플레이어 회전과 독립
+                cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
+            }
         }
-        else
-        {
-            float rotateY = _input.look.x;
-            float rotateX = _input.look.y;
 
-            currentYRotation += rotateY;
-            currentXRotation -= rotateX;
-            currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
 
-            // cameraFollowObject만 회전, 플레이어 회전과 독립
-            cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
-        }
 
     }
 
