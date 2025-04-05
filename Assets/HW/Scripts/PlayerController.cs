@@ -55,6 +55,12 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Time required to pass before being able to evade again")]
     public float EvadeTimeout = 5.0f; // Evade 쿨다운
 
+    [Space(10)]
+    [Tooltip("Evade distance in meters")]
+    public float EvadeDistance = 2.0f; // 회피 이동 거리
+    [Tooltip("Evade speed multiplier")]
+    public float EvadeSpeedMultiplier = 1.5f; // 회피 속도 배수 (기본 속도에 곱해짐)
+
 
     [SerializeField] GameObject cameraFollowObject; //cameras will follow this obj that is on player gameobject.
     private CharacterController _controller;
@@ -145,40 +151,47 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        if(_isMoveDisabled) //true. 움직일 수 없음.
+        if (_isMoveDisabled) // 움직일 수 없음
         {
-
+            return;
         }
-        else //false
+
+        if (_isEvading) // 회피 중일 때
         {
-            if (_isEvading)
+            _evadeTimeRemaining -= Time.deltaTime;
+
+            // 회피 중 이동 처리
+            float evadeSpeed = DefaultMoveSpeed * EvadeSpeedMultiplier; // 빠른 이동 속도
+            Vector3 evadeMove = _evadeDirection * evadeSpeed * Time.deltaTime;
+
+            // 수평 이동만 적용 (중력은 JumpAndGravity에서 처리)
+            _controller.Move(evadeMove + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+
+            if (_evadeTimeRemaining <= 0.0f && Grounded)
             {
-                _evadeTimeRemaining -= Time.deltaTime;
-                if (_evadeTimeRemaining <= 0.0f && Grounded)
-                {
-                    _isEvading = false; // 회피 종료
-                }
+                _isEvading = false; // 회피 종료
+                Debug.Log("Evade Ended!");
+            }
+        }
+        else // 일반 이동
+        {
+            if (_input.isZooming)
+            {
+                _animator.SetBool(_animIDZoom, true);
+                OnZoomMove();
             }
             else
             {
-                if (_input.isZooming)
-                {
-                    _animator.SetBool(_animIDZoom, true);
-                    OnZoomMove();
-                }
-                else
-                {
-                    _animator.SetBool(_animIDZoom, false);
-                    DefaultMove();
-                }
+                _animator.SetBool(_animIDZoom, false);
+                DefaultMove();
             }
         }
 
-        if (_jumpTimeoutDelta >= 0.0f) //점프 대기시간 감소
+        if (_jumpTimeoutDelta >= 0.0f) // 점프 대기시간 감소
         {
             _jumpTimeoutDelta -= Time.deltaTime;
         }
-        if (_evadeTimeoutDelta >= 0.0f) //회피 대기시간 감소
+        if (_evadeTimeoutDelta >= 0.0f) // 회피 대기시간 감소
         {
             _evadeTimeoutDelta -= Time.deltaTime;
         }
@@ -186,8 +199,6 @@ public class PlayerController : MonoBehaviour
         {
             fireTimeOutDelta -= Time.deltaTime;
         }
-
-
     }
 
     private void LateUpdate()
@@ -482,18 +493,46 @@ public class PlayerController : MonoBehaviour
 
     private void PerformEvade()
     {
-        if (!_isEvading && _evadeTimeoutDelta <= 0.0f) // 쿨타임이 끝난 경우에만 회피 시작
+        if (!_isEvading && _evadeTimeoutDelta <= 0.0f)
         {
             _animator.SetTrigger(_animIDEvade);
             _isEvading = true;
-            _evadeTimeoutDelta = EvadeTimeout; // 쿨타임 재설정
-            _evadeTimeRemaining = 0.6f; // 회피 동작 지속 시간 (조정 가능)
+            _evadeTimeoutDelta = EvadeTimeout;
+            _evadeTimeRemaining = 0.4f;
 
-            // 방향 계산
-            Vector3 moveDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-            _evadeDirection = moveDirection.normalized;
+            // 플레이어의 앞은 카메라 앞과 일치
+            Vector3 cameraForward = _mainCamera.transform.forward;
+            cameraForward.y = 0;
+            cameraForward = cameraForward.normalized;
+            Vector3 cameraRight = _mainCamera.transform.right;
+            cameraRight.y = 0;
+            cameraRight = cameraRight.normalized;
 
-            Debug.Log($"Evade Started! Timeout: {_evadeTimeoutDelta}, Remaining: {_evadeTimeRemaining}");
+            // 입력 방향 가져오기
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+            if (inputDirection.magnitude > 0.1f)
+            {
+                // 입력 방향을 카메라 기준으로 변환
+                float angle = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg;
+                float relativeAngle = angle; // 입력 방향의 절대 각도 사용
+
+                // 4방향으로 매핑 (카메라 앞을 기준으로)
+                if (relativeAngle >= -45f && relativeAngle <= 45f) // 앞 (W)
+                    _evadeDirection = cameraForward;
+                else if (relativeAngle >= 135f || relativeAngle <= -135f) // 뒤 (S)
+                    _evadeDirection = -cameraForward;
+                else if (relativeAngle > 45f && relativeAngle < 135f) // 오른쪽 (D)
+                    _evadeDirection = cameraRight;
+                else if (relativeAngle < -45f && relativeAngle > -135f) // 왼쪽 (A)
+                    _evadeDirection = -cameraRight;
+            }
+            else // 입력 없으면 기본적으로 뒤로 회피
+            {
+                _evadeDirection = -cameraForward;
+            }
+
+            Debug.Log($"Evade Direction: {_evadeDirection}, Input: {_input.move}");
         }
     }
 
