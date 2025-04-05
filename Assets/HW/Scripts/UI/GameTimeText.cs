@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class GameTimeText : MonoBehaviour
 {
-    private GameManager gameManager;
+    private GameInfoManager gameManager;
     private TextMeshProUGUI gameTimeText;
 
     private void Start()
     {
         gameTimeText = GetComponent<TextMeshProUGUI>();
-        gameManager = GameManager.Instance;
+        gameManager = GameInfoManager.Instance;
         gameManager.OnSystemTimeChangeAction += ChangeTimeText;
     }
 

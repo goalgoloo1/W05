@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameInfoManager : MonoBehaviour
 {
-    public static GameManager Instance => _instance;
-    static GameManager _instance;
+    public static GameInfoManager Instance => _instance;
+    static GameInfoManager _instance;
 
     public Action<float> OnSystemTimeChangeAction;
 
@@ -13,8 +13,8 @@ public class GameManager : MonoBehaviour
         _instance = this;
     }
 
-    public float systemTime; //°ÔÀÓ½Ã°£
-    public int currentStage; //½ºÅ×ÀÌÁö ³Ñ¹ö
+    public float systemTime; //ï¿½ï¿½ï¿½Ó½Ã°ï¿½
+    public int currentStage; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¹ï¿½
 
     private void Start()
     {
@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
 
     private void InitializeProperties()
     {
-        systemTime = 0f; //°ÔÀÓ ½Ã°£ -> 0
+        systemTime = 0f; //ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ -> 0
     }
 
     private void Update()
@@ -36,6 +36,6 @@ public class GameManager : MonoBehaviour
     private void UpdateTime()
     {
         systemTime += Time.deltaTime;
-        OnSystemTimeChangeAction?.Invoke(systemTime); //°ÔÀÓ ½Ã°£ ¾÷µ¥ÀÌÆ® ¾×¼Ç.
+        OnSystemTimeChangeAction?.Invoke(systemTime); //ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½×¼ï¿½.
     }
 }
