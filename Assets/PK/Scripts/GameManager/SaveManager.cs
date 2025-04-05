@@ -69,6 +69,7 @@ public class SaveManager : MonoBehaviour
                 currentData = new PlayerData(); // 로드 실패 시 기본값
             }
         }
+        
         else
         {
             Debug.LogWarning("Save file not found at: " + saveFilePath);

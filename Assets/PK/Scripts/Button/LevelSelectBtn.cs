@@ -1,4 +1,5 @@
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 using TMPro;
 using System.Collections;
@@ -43,5 +44,8 @@ public class LevelSelectBtn : MonoBehaviour
 
         yield return new WaitForSeconds(1.6f);
         Debug.Log("Going to stage: " + stageToGo);
+
+        // Check integrity of scene
+        SceneManager.LoadScene(stageToGo);
     }
 }
