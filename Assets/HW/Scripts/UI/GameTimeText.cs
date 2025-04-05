@@ -19,7 +19,7 @@ public class GameTimeText : MonoBehaviour
         float remainingSeconds = newValue % 60;
         int seconds = (int)remainingSeconds;
         int deciseconds = (int)((remainingSeconds - seconds) * 100);
-        string timeText = string.Format("Wasted : {0:D2}:{1:D2}:{2:D2}", minutes, seconds, deciseconds);
+        string timeText = string.Format("{0:D2}:{1:D2}:{2:D2}", minutes, seconds, deciseconds);
         gameTimeText.text = timeText;
     }
 }
