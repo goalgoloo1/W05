@@ -154,7 +154,7 @@ MonoBehaviour:
   - From: Dolly1CinemachineCamera
     To: distanced third person camera
     Blend:
-      Style: 2
+      Style: 0
       Time: 2
       CustomCurve:
         serializedVersion: 2
