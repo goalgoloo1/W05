@@ -568,7 +568,7 @@ public class PlayerController : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(bulletTimeTime);
 
-        targetGroup.RemoveMember(enemyObject.transform);
+        //targetGroup.RemoveMember(enemyObject.transform);
         Time.timeScale = 1f;
 
         _controller.detectCollisions = true;

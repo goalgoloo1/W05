@@ -1906,6 +1906,26 @@ PrefabInstance:
       propertyPath: AvoidObstacles.Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5204659031252419077, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: m_StopNaN
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5204659031252419077, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: m_Dithering
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5204659031252419077, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: m_Antialiasing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5204659031252419077, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: m_RenderPostProcessing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276304948148212765, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: orthographic
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5276304948148212765, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: field of view
       value: 60
