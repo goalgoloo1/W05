@@ -60,7 +60,7 @@ public class LiftingUp : MonoBehaviour
         //    }
         //    yield return null;
         //}
-
+        _player.transform.position = _targetPos[0].position;
         Vector3 target2Dir = (_targetPos[1].position - _targetPos[0].position).normalized;
 
         _impulseSource.GenerateImpulse();
