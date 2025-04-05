@@ -35,7 +35,7 @@ MonoBehaviour:
   - rid: 8487318364203254087
   - rid: 8487318364203254135
   - rid: 8487318364203254351
-  m_VersionTimestamp: 638793959124467294
+  m_VersionTimestamp: 638794441860654348
   m_CommandBuffer:
     m_Commands: []
   m_RuntimeBlackboardAsset: {fileID: 4354987099286773791}
@@ -274,7 +274,7 @@ MonoBehaviour:
         AuthoringAssetID:
           m_Value0: 16445145428091305927
           m_Value1: 7364072313022469144
-        m_DebugInfo: {fileID: 0}
+        m_DebugInfo: {fileID: -7692665958172141738}
         Root:
           rid: 8487318371973726606
         BlackboardReference:
@@ -286,7 +286,7 @@ MonoBehaviour:
           rid: 8487318371973726608
         m_EndedNodes:
           rid: 8487318371973726609
-        m_VersionTimestamp: 638793957931703852
+        m_VersionTimestamp: 638794441860654348
     - rid: 8487318371973726606
       type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -682,7 +682,7 @@ MonoBehaviour:
   - rid: 8487318367549784286
   - rid: 8487318371973726511
   - rid: 8487318371973726547
-  m_VersionTimestamp: 638793959124457326
+  m_VersionTimestamp: 638794441860654348
   m_DebugInfo: {fileID: -7692665958172141738}
   m_RuntimeGraph: {fileID: -980718179009812719}
   AssetID:
@@ -1356,7 +1356,7 @@ MonoBehaviour:
           m_Value0: 0
           m_Value1: 0
         Name: 
-        m_Value: SpeedMagnitude
+        m_Value: 
     - rid: 8487318353657725131
       type: {class: 'BlackboardVariable`1[[System.Boolean, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -1550,7 +1550,7 @@ MonoBehaviour:
           m_Value0: 0
           m_Value1: 0
         Name: 
-        m_Value: 5
+        m_Value: 6
     - rid: 8487318353657725405
       type: {class: 'TypedVariableModel`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
