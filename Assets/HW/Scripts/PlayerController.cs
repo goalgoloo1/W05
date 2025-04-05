@@ -426,12 +426,12 @@ public class PlayerController : MonoBehaviour
 
     private void JumpAndGravity()
     {
-        if (Grounded) //땅에 있을 때
+        if (Grounded) // 땅에 있을 때
         {
-            _fallTimeoutDelta = FallTimeout; //낙하 전환시간은 초기치로 계속 초기화
+            _fallTimeoutDelta = FallTimeout;
 
-            if (_hasAnimator) //애니메이션 재생 없음.
-            { 
+            if (_hasAnimator)
+            {
                 _animator.SetBool(_animIDJump, false);
                 _animator.SetBool(_animIDFreeFall, false);
             }
@@ -441,34 +441,25 @@ public class PlayerController : MonoBehaviour
                 _verticalVelocity = -2f;
             }
 
-            //// 줌인 상태에서 Evade 체크
-            //if (_input.isZooming && _input.evade && _evadeTimeoutDelta <= 0.0f)
-            //{
-            //    PerformEvade();
-            //    _input.evade = false; // Evade 입력 즉시 리셋
-            //}
-            // 기본 점프
-            else if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+            // 점프 쿨다운 감소 (Move()에서 처리하던 것을 여기로 이동)
+            if (_jumpTimeoutDelta >= 0.0f)
             {
+                _jumpTimeoutDelta -= Time.deltaTime;
+            }
+
+            if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+            {
+                Debug.Log("점프 실행 - Velocity: " + _verticalVelocity);
                 _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
                 if (_hasAnimator)
                 {
                     _animator.SetBool(_animIDJump, true);
                 }
-                _input.jump = false;
-                //_input.evade = false;
             }
-            else
-            {
-                //_input.evade = false;
-            }
-
-
         }
-        else //공중
+        else // 공중
         {
             _jumpTimeoutDelta = JumpTimeout;
-            //_evadeTimeoutDelta = EvadeTimeout;
 
             if (_fallTimeoutDelta >= 0.0f)
             {
@@ -479,19 +470,13 @@ public class PlayerController : MonoBehaviour
                 _animator.SetBool(_animIDFreeFall, true);
             }
 
-            _input.jump = false;
-            _input.evade = false;
+            _input.jump = false; // 입력 리셋
         }
 
         if (_verticalVelocity < _terminalVelocity)
         {
             _verticalVelocity += Gravity * Time.deltaTime;
         }
-
-        //if (_isEvading && Grounded && _evadeTimeRemaining <= 0.0f)
-        //{
-        //    _isEvading = false; // 지면 착지 후 회피 종료
-        //}
     }
 
 
@@ -502,7 +487,7 @@ public class PlayerController : MonoBehaviour
             _animator.SetTrigger(_animIDEvade);
             _isEvading = true;
             _evadeTimeoutDelta = EvadeTimeout; // 쿨타임 재설정
-            _evadeTimeRemaining = 0.3f; // 회피 동작 지속 시간 (조정 가능)
+            _evadeTimeRemaining = 0.6f; // 회피 동작 지속 시간 (조정 가능)
 
             // 방향 계산
             Vector3 moveDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
