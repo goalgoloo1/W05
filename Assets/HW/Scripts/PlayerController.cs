@@ -210,7 +210,7 @@ public class PlayerController : MonoBehaviour
 
     private void CameraRotation()
     {
-        if(_isMoveDisabled)
+        if(!_isMoveDisabled)
         {
             if (_input.isZooming)
             {
