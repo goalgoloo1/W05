@@ -23,6 +23,8 @@ public class PlayerManager : MonoBehaviour
     public int maxBulletCount;
     public int initialBulletCount = 3; //count of bullet at start of game.
     public int remainingBullet; //Remaining bullet count.
+    public float evadeTimeout = 1.5f;
+    public float evadeTimeoutDelta;
 
     /// <summary>
     /// Actions.
@@ -30,6 +32,7 @@ public class PlayerManager : MonoBehaviour
     public Action<int, int> OnChangeBulletCountAction; //current, maximum
     public Action<float, float> OnChangeFireCoolDownAction; //current, maximum
     public Action<float, float> OnChangeReloadingTimeAction; //current, maximum
+    public Action<float, float> OnChangeEvadeCoolDownAction; //maximum - current, maximum
 
     [Space(10)]
     [Header("References")]
@@ -63,6 +66,16 @@ public class PlayerManager : MonoBehaviour
     {
         UpdateFireCoolDown();
         UpdateReloadingCoolDown();
+        UpdateEvadeCoolDown();
+    }
+
+    private void UpdateEvadeCoolDown()
+    {
+        if(evadeTimeoutDelta >= 0f)
+        {
+            evadeTimeoutDelta -= Time.deltaTime;
+            OnChangeEvadeCoolDownAction?.Invoke(evadeTimeout - evadeTimeoutDelta, evadeTimeout);
+        }
     }
 
     private void UpdateFireCoolDown()

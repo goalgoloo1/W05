@@ -22,5 +22,8 @@ public class BulletCountText : MonoBehaviour
         bulletCountMaxText.text = "/" + maxBulletCount + "";
     }
 
-
+    private void OnDestroy()
+    {
+        playerManager.OnChangeBulletCountAction -= ChangeBulletText;
+    }
 }

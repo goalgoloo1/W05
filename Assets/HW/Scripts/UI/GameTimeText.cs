@@ -22,4 +22,9 @@ public class GameTimeText : MonoBehaviour
         string timeText = string.Format("{0:D2}:{1:D2}:{2:D2}", minutes, seconds, deciseconds);
         gameTimeText.text = timeText;
     }
+
+    private void OnDestroy()
+    {
+        gameManager.OnSystemTimeChangeAction -= ChangeTimeText;
+    }
 }

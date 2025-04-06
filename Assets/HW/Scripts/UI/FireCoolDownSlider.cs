@@ -16,4 +16,9 @@ public class FireCoolDownSlider : MonoBehaviour
         fireCoolDownSlider.maxValue = maxValue;
         fireCoolDownSlider.value = currentValue;
     }
+
+    private void OnDestroy()
+    {
+        PlayerManager.Instance.OnChangeFireCoolDownAction -= ChangeSliderValue;
+    }
 }

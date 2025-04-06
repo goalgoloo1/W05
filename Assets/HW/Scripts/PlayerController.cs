@@ -70,6 +70,7 @@ public class PlayerController : MonoBehaviour
     private PlayerInput _playerInput;
     private GameObject _mainCamera;
     [SerializeField] private Animator _animator; //it might be able with inspector referencing.
+    private PlayerManager _playerManager;
 
     // player
     private float _speed;
@@ -117,6 +118,7 @@ public class PlayerController : MonoBehaviour
         _mainCamera = Camera.main.gameObject;
         _hasAnimator = TryGetComponent(out _animator); //may be by inspector?
         playerManager = PlayerManager.Instance;
+        _playerManager = PlayerManager.Instance;
 
         AssignAnimationIDs();
 
@@ -194,10 +196,10 @@ public class PlayerController : MonoBehaviour
         {
             _jumpTimeoutDelta -= Time.deltaTime;
         }
-        if (_evadeTimeoutDelta >= 0.0f) // 회피 대기시간 감소
-        {
-            _evadeTimeoutDelta -= Time.deltaTime;
-        }
+        //if (_playerManager.evadeTimeoutDelta >= 0.0f) // 회피 대기시간 감소
+        //{
+        //    _evadeTimeoutDelta -= Time.deltaTime;
+        //}
     }
 
     private void LateUpdate()
@@ -497,11 +499,11 @@ public class PlayerController : MonoBehaviour
 
     private void PerformEvade()
     {
-        if (!_isEvading && _evadeTimeoutDelta <= 0.0f && Grounded)
+        if (!_isEvading && _playerManager.evadeTimeoutDelta <= 0.0f && Grounded)
         {
             _animator.SetTrigger(_animIDEvade);
             _isEvading = true;
-            _evadeTimeoutDelta = EvadeTimeout;
+            _playerManager.evadeTimeoutDelta = _playerManager.evadeTimeout;
             _evadeTimeRemaining = 0.6f;
 
             Vector3 cameraForward = _mainCamera.transform.forward;
