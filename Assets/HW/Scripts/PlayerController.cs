@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
@@ -69,6 +70,7 @@ public class PlayerController : MonoBehaviour
     private PlayerInput _playerInput;
     private GameObject _mainCamera;
     [SerializeField] private Animator _animator; //it might be able with inspector referencing.
+    private PlayerManager _playerManager;
 
     // player
     private float _speed;
@@ -116,6 +118,7 @@ public class PlayerController : MonoBehaviour
         _mainCamera = Camera.main.gameObject;
         _hasAnimator = TryGetComponent(out _animator); //may be by inspector?
         playerManager = PlayerManager.Instance;
+        _playerManager = PlayerManager.Instance;
 
         AssignAnimationIDs();
 
@@ -193,10 +196,10 @@ public class PlayerController : MonoBehaviour
         {
             _jumpTimeoutDelta -= Time.deltaTime;
         }
-        if (_evadeTimeoutDelta >= 0.0f) // 회피 대기시간 감소
-        {
-            _evadeTimeoutDelta -= Time.deltaTime;
-        }
+        //if (_playerManager.evadeTimeoutDelta >= 0.0f) // 회피 대기시간 감소
+        //{
+        //    _evadeTimeoutDelta -= Time.deltaTime;
+        //}
     }
 
     private void LateUpdate()
@@ -496,11 +499,11 @@ public class PlayerController : MonoBehaviour
 
     private void PerformEvade()
     {
-        if (!_isEvading && _evadeTimeoutDelta <= 0.0f && Grounded)
+        if (!_isEvading && _playerManager.evadeTimeoutDelta <= 0.0f && Grounded)
         {
             _animator.SetTrigger(_animIDEvade);
             _isEvading = true;
-            _evadeTimeoutDelta = EvadeTimeout;
+            _playerManager.evadeTimeoutDelta = _playerManager.evadeTimeout;
             _evadeTimeRemaining = 0.6f;
 
             Vector3 cameraForward = _mainCamera.transform.forward;
@@ -554,6 +557,7 @@ public class PlayerController : MonoBehaviour
     {
         GameObject enemyObject = enemyBullet.GetComponent<BulletMovement>().enemyShooter; //get shooter of the bullet.
 
+        Instantiate((GameObject)Resources.Load("HW/EvadeSuccessParticle"), transform);
         //ChangeCamera
         //CameraController.Instance.ChangeCamera(enemyTrackCamera);
         //targetGroup.AddMember(enemyObject.transform, 0, 1);
@@ -634,5 +638,16 @@ public class PlayerController : MonoBehaviour
             playerManager.Shot();
         }
 
+    }
+
+    public void OnDeath()
+    {
+        Debug.Log("player Death");
+
+        Instantiate((GameObject)Resources.Load("HW/PlayerDeathParticle"), transform.position, Quaternion.identity);
+
+        Scene currentScene = SceneManager.GetActiveScene(); // 현재 활성 씬 가져오기
+        SceneManager.LoadScene(currentScene.name); // 현재 씬 이름으로 다시 로드
+        //GameManager.ShowRetryUI();
     }
 }

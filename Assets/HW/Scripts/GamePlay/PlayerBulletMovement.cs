@@ -16,6 +16,8 @@ public class PlayerBulletMovement : MonoBehaviour
         {
             rb.freezeRotation = true; // 회전 고정
         }
+
+        Destroy(gameObject, 5f);
     }
 
     public void SetTargetPosition(Vector3 targetPosition)
@@ -40,20 +42,27 @@ public class PlayerBulletMovement : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (TEMPGameManager.Instance != null)
+        if(collision.gameObject.CompareTag("Player"))
         {
-            TEMPGameManager.Instance.OnBulletCollision(gameObject, collision.gameObject);
+            //do nothing
+        }
+        else if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Destroy(collision.gameObject);
+            Destroy(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
         }
 
-        Destroy(gameObject);
     }
 
     private void OnDestroy()
     {
-        if (TEMPGameManager.Instance != null)
-        {
-            TEMPGameManager.Instance.UnregisterBullet(gameObject);
-        }
+        Instantiate((GameObject)Resources.Load("HW/BulletDestroyParticle"), transform.position, Quaternion.identity);
+
+
     }
 
     /// <summary>

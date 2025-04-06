@@ -24,10 +24,21 @@ public class BulletMovement : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (TEMPGameManager.Instance != null)
+        //if (TEMPGameManager.Instance != null)
+        //{
+        //    TEMPGameManager.Instance.OnBulletCollision(gameObject, collision.gameObject);
+        //}
+        Debug.Log(collision.gameObject);
+
+        if(collision.gameObject.CompareTag("Player"))
         {
-            TEMPGameManager.Instance.OnBulletCollision(gameObject, collision.gameObject);
+            PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
+            if(!playerController.evadeSuccess)
+            {
+                playerController.OnDeath();
+            }
         }
+
 
         Destroy(gameObject);
     }
