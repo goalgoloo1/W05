@@ -27,7 +27,7 @@ public partial class EnemyShootAction : Action
 
     // 레이저 관련 변수
     private float laserMaxLength = 100f;
-    private float laserWidth = 0.05f;
+    private float laserWidth = 0.02f;
     private Vector3 currentAimDirection;
 
     protected override Status OnStart()
