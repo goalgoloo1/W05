@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
@@ -554,6 +555,7 @@ public class PlayerController : MonoBehaviour
     {
         GameObject enemyObject = enemyBullet.GetComponent<BulletMovement>().enemyShooter; //get shooter of the bullet.
 
+        Instantiate((GameObject)Resources.Load("HW/EvadeSuccessParticle"), transform);
         //ChangeCamera
         //CameraController.Instance.ChangeCamera(enemyTrackCamera);
         //targetGroup.AddMember(enemyObject.transform, 0, 1);
@@ -634,5 +636,16 @@ public class PlayerController : MonoBehaviour
             playerManager.Shot();
         }
 
+    }
+
+    public void OnDeath()
+    {
+        Debug.Log("player Death");
+
+        Instantiate((GameObject)Resources.Load("HW/PlayerDeathParticle"), transform.position, Quaternion.identity);
+
+        Scene currentScene = SceneManager.GetActiveScene(); // 현재 활성 씬 가져오기
+        SceneManager.LoadScene(currentScene.name); // 현재 씬 이름으로 다시 로드
+        //GameManager.ShowRetryUI();
     }
 }

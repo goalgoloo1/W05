@@ -78,7 +78,7 @@ public class PlayerManager : MonoBehaviour
 
     private void UpdateReloadingCoolDown()
     {
-        if (reloadingTimeDelta >= 0f)
+        if (reloadingTimeDelta >= 0f && !(remainingBullet == maxBulletCount))
         {
             reloadingTimeDelta -= Time.deltaTime;
 
