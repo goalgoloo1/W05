@@ -556,7 +556,7 @@ public class PlayerController : MonoBehaviour
     public void OnEvadeSuccess(GameObject enemyBullet)
     {
         GameObject enemyObject = enemyBullet.GetComponent<BulletMovement>().enemyShooter; //get shooter of the bullet.
-
+        playerManager.IncreaseBulletCount(1);
         Instantiate((GameObject)Resources.Load("HW/EvadeSuccessParticle"), transform);
         //ChangeCamera
         //CameraController.Instance.ChangeCamera(enemyTrackCamera);
@@ -567,7 +567,8 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator OnEvadeSuccessCoroutine(GameObject enemyObject)
     {
-        Time.timeScale = 0.4f;
+        Time.timeScale = 0.3f;
+        
         _controller.detectCollisions = false;
 
         yield return new WaitForSecondsRealtime(bulletTimeTime);
