@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -25,6 +26,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] MenuUIManager menuUIManager;
     [SerializeField] List<string> stageTitle;
     private string menuScene;
+    private Vector3 resetPos; // If null, starting on the position where the player has been spawnned
+    private bool useResetPos; // If null, starting on the position where the player has been spawnned
+    private GameObject playerSelf;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -40,6 +44,8 @@ public class GameManager : MonoBehaviour
         InitializeManagers();
 
         menuScene = SceneManager.GetActiveScene().name;
+
+        SetPlayerLocation();
     }
 
     private void InitializeManagers()
@@ -93,5 +99,29 @@ public class GameManager : MonoBehaviour
             }
         }
         return false; // Scene not found
-    } 
+    }
+
+    internal void SetCheckPoint(Vector3 position)
+    {
+        useResetPos = true;
+        resetPos = position;
+    }
+
+    internal void ResetCheckPoint()
+    {
+        useResetPos = false;
+    }
+
+
+    void SetPlayerLocation()
+    {
+        if(useResetPos)
+        {
+            playerSelf = GameObject.FindGameObjectWithTag("Player");
+            if (playerSelf != null)
+            {
+                playerSelf.transform.position = resetPos + (Vector3.up * 1.2f);
+            };
+        }
+    }
 }

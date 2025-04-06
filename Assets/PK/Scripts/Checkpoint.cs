@@ -17,6 +17,7 @@ public class Checkpoint : MonoBehaviour
         if(playerController)
         {
             Debug.Log("Player has reached checkpoint");
+            GameManager.Instance.SetCheckPoint(transform.position);
         }        
     }
 }
