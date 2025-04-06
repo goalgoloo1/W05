@@ -11,7 +11,7 @@ public class CameraController : MonoBehaviour
         _instance = this;
     }
 
-    CinemachineCamera prevCamera;
+    public CinemachineCamera prevCamera;
 
     public void ChangeCamera(CinemachineCamera newCamera)
     {

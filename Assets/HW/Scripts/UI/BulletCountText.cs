@@ -7,6 +7,7 @@ public class BulletCountText : MonoBehaviour
     private TextMeshProUGUI bulletCountMaxText;
 
     private PlayerManager playerManager;
+    private int previousBulletCount;
 
     private void Start()
     {
@@ -20,10 +21,33 @@ public class BulletCountText : MonoBehaviour
     {
         bulletCountText.text = newBulletCount + "";
         bulletCountMaxText.text = "/" + maxBulletCount + "";
+
+        if(newBulletCount > previousBulletCount) //increase
+        {
+            ChangeTextColor(Color.blue);
+        }
+        else if(newBulletCount < previousBulletCount)//decrease
+        {
+            ChangeTextColor(Color.red);
+        }
+
+            previousBulletCount = newBulletCount;
     }
 
     private void OnDestroy()
     {
         playerManager.OnChangeBulletCountAction -= ChangeBulletText;
+    }
+
+    private void ChangeTextColor(Color color)
+    {
+        bulletCountText.color = color;
+
+        Invoke("RecoverColor", 0.3f);
+    }
+
+    private void RecoverColor()
+    {
+        bulletCountText.color = Color.white;
     }
 }

@@ -124,7 +124,7 @@ public class PlayerManager : MonoBehaviour
         OnChangeBulletCountAction?.Invoke(remainingBullet, maxBulletCount);
     }
 
-    private void IncreaseBulletCount(int countToAdd)
+    public void IncreaseBulletCount(int countToAdd)
     {
         remainingBullet += countToAdd;
         remainingBullet = Mathf.Clamp(remainingBullet, 0, maxBulletCount);
