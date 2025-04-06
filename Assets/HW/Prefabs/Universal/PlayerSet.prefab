@@ -191,9 +191,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f4922ad8e1953b438758bf9815a59da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireCoolDown: 1
+  fireCoolDown: 1.35
   fireCoolDownDelta: 0
-  reloadingTime: 2.5
+  reloadingTime: 3
   reloadingTimeDelta: 0
   maxBulletCount: 3
   initialBulletCount: 3
@@ -4153,8 +4153,20 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2685064413996966963, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: DefaultMoveSpeed
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2685064413996966963, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: enemyTrackCamera
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2685064413996966963, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: ZoomedInMoveSpeed
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2685064413996966963, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: EvadeSpeedMultiplier
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 3299397432481809471, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: m_LocalPosition.x
