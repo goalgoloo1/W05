@@ -39,7 +39,8 @@ public class CharacterInputs : MonoBehaviour
 
     void Update()
     {
-        look = Vector2.Lerp(look, rawLook, smoothSpeed * Time.deltaTime);
+        //look = Vector2.Lerp(look, rawLook, smoothSpeed * Time.deltaTime);
+        look = rawLook;
     }
 
 

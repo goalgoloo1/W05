@@ -147,11 +147,17 @@ public class PlayerController : MonoBehaviour
         //_animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
     }
 
+    private void FixedUpdate()
+    {
+
+    }
+
     private void Update()
     {
         JumpAndGravity();
         GroundedCheck();
         Move();
+
     }
 
     private void Move()
