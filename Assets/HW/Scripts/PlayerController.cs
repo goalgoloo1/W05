@@ -645,12 +645,11 @@ public class PlayerController : MonoBehaviour
         Debug.Log("player Death");
 
         Instantiate((GameObject)Resources.Load("HW/PlayerDeathParticle"), transform.position, Quaternion.identity);
+        _isMoveDisabled = true;
 
-        GameManager.Instance.SetPlayerLocation();
+        //Scene currentScene = SceneManager.GetActiveScene(); // ���� Ȱ�� �� ��������
+        //SceneManager.LoadScene(currentScene.name); // ���� �� �̸����� �ٽ� �ε�
 
-        Scene currentScene = SceneManager.GetActiveScene(); // ���� Ȱ�� �� ��������
-        SceneManager.LoadScene(currentScene.name); // ���� �� �̸����� �ٽ� �ε�
-
-        //GameManager.ShowRetryUI();
+        MenuUIManager.Instance.ShowMenuUIGameover();
     }
 }

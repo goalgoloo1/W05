@@ -13,6 +13,6 @@ public class MenuButton : MonoBehaviour
 
     void GoToMenu()
     {
-        GameManager.Instance.ResetScene();
+        GameManager.Instance.GoToMenu();
     }
 }
