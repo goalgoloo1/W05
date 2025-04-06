@@ -396,7 +396,7 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""id"": ""e0ae5fd7-9196-42f0-b23b-cdf903f9bcb1"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
-                    ""processors"": ""DeltaTimeScale,ScaleVector2(x=1.9,y=1.9),NormalizeVector2"",
+                    ""processors"": ""DeltaTimeScale,NormalizeVector2,ScaleVector2(x=1.9,y=1.9)"",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Look"",
                     ""isComposite"": false,
