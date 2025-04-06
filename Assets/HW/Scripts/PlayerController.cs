@@ -55,13 +55,13 @@ public class PlayerController : MonoBehaviour
 
     [Space(10)]
     [Tooltip("Time required to pass before being able to evade again")]
-    public float EvadeTimeout = 5.0f; // Evade Äð´Ù¿î
+    public float EvadeTimeout = 5.0f; // Evade ï¿½ï¿½Ù¿ï¿½
 
     [Space(10)]
     [Tooltip("Evade distance in meters")]
-    public float EvadeDistance = 2.0f; // È¸ÇÇ ÀÌµ¿ °Å¸®
+    public float EvadeDistance = 2.0f; // È¸ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½Å¸ï¿½
     [Tooltip("Evade speed multiplier")]
-    public float EvadeSpeedMultiplier = 1.5f; // È¸ÇÇ ¼Óµµ ¹è¼ö (±âº» ¼Óµµ¿¡ °öÇØÁü)
+    public float EvadeSpeedMultiplier = 1.5f; // È¸ï¿½ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ (ï¿½âº» ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 
 
     [SerializeField] GameObject cameraFollowObject; //cameras will follow this obj that is on player gameobject.
@@ -78,15 +78,15 @@ public class PlayerController : MonoBehaviour
     private float _rotationVelocity;
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
-    private float _evadeTimeRemaining; // Evade µ¿ÀÛ ³²Àº ½Ã°£
-    private Vector3 _evadeDirection; // Evade ¹æÇâ ÀúÀå
-    private bool _isEvading; // Evade ÁßÀÎÁö ÃßÀû
-    private bool _isMoveDisabled; //¿òÁ÷ÀÏ ¼ö ¾ø´Â »óÅÂ.
+    private float _evadeTimeRemaining; // Evade ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    private Vector3 _evadeDirection; // Evade ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    private bool _isEvading; // Evade ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    private bool _isMoveDisabled; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 
     // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
-    private float _evadeTimeoutDelta; // Evade Äð´Ù¿î Å¸ÀÌ¸Ó
+    private float _evadeTimeoutDelta; // Evade ï¿½ï¿½Ù¿ï¿½ Å¸ï¿½Ì¸ï¿½
 
 
     // animation IDs
@@ -106,7 +106,7 @@ public class PlayerController : MonoBehaviour
     private float currentXRotation = 0f;
     private float currentYRotation = 0f;
     public float maxXAngle = 50f;
-    //private bool wasZoomingLastFrame = false; // ÁÜ »óÅÂ ÃßÀû
+    //private bool wasZoomingLastFrame = false; // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     private bool _hasAnimator;
 
@@ -125,7 +125,7 @@ public class PlayerController : MonoBehaviour
         // reset our timeouts on start
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
-        _evadeTimeoutDelta = EvadeTimeout; // Evade Äð´Ù¿î ÃÊ±âÈ­
+        _evadeTimeoutDelta = EvadeTimeout; // Evade ï¿½ï¿½Ù¿ï¿½ ï¿½Ê±ï¿½È­
 
         _input.onFireAction += Fire;
         _input.onEvadeAction += PerformEvade;
@@ -156,29 +156,29 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        if (_isMoveDisabled) // ¿òÁ÷ÀÏ ¼ö ¾øÀ½
+        if (_isMoveDisabled) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         {
             return;
         }
 
-        if (_isEvading) // È¸ÇÇ ÁßÀÏ ¶§
+        if (_isEvading) // È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
         {
             _evadeTimeRemaining -= Time.deltaTime;
 
-            // È¸ÇÇ Áß ÀÌµ¿ Ã³¸®
-            float evadeSpeed = DefaultMoveSpeed * EvadeSpeedMultiplier; // ºü¸¥ ÀÌµ¿ ¼Óµµ
+            // È¸ï¿½ï¿½ ï¿½ï¿½ ï¿½Ìµï¿½ Ã³ï¿½ï¿½
+            float evadeSpeed = DefaultMoveSpeed * EvadeSpeedMultiplier; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½Óµï¿½
             Vector3 evadeMove = _evadeDirection * evadeSpeed * Time.deltaTime;
 
-            // ¼öÆò ÀÌµ¿¸¸ Àû¿ë (Áß·ÂÀº JumpAndGravity¿¡¼­ Ã³¸®)
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ß·ï¿½ï¿½ï¿½ JumpAndGravityï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½)
             _controller.Move(evadeMove + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
             if (_evadeTimeRemaining <= 0.0f && Grounded)
             {
-                _isEvading = false; // È¸ÇÇ Á¾·á
+                _isEvading = false; // È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 Debug.Log("Evade Ended!");
             }
         }
-        else // ÀÏ¹Ý ÀÌµ¿
+        else // ï¿½Ï¹ï¿½ ï¿½Ìµï¿½
         {
             if (_input.isZooming)
             {
@@ -192,11 +192,11 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (_jumpTimeoutDelta >= 0.0f) // Á¡ÇÁ ´ë±â½Ã°£ °¨¼Ò
+        if (_jumpTimeoutDelta >= 0.0f) // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½
         {
             _jumpTimeoutDelta -= Time.deltaTime;
         }
-        //if (_playerManager.evadeTimeoutDelta >= 0.0f) // È¸ÇÇ ´ë±â½Ã°£ °¨¼Ò
+        //if (_playerManager.evadeTimeoutDelta >= 0.0f) // È¸ï¿½ï¿½ ï¿½ï¿½ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½
         //{
         //    _evadeTimeoutDelta -= Time.deltaTime;
         //}
@@ -215,7 +215,7 @@ public class PlayerController : MonoBehaviour
         {
             if (_input.isZooming)
             {
-                // Pan/Tilt ÀÔ·Â Àû¿ë
+                // Pan/Tilt ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½
                 float rotateY = _input.look.x;
                 float rotateX = _input.look.y;
 
@@ -223,13 +223,13 @@ public class PlayerController : MonoBehaviour
                 currentXRotation -= rotateX;
                 currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
 
-                // cameraFollowObject¸¸ È¸Àü, ÇÃ·¹ÀÌ¾î È¸Àü°ú µ¶¸³
+                // cameraFollowObjectï¿½ï¿½ È¸ï¿½ï¿½, ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
 
-                // cameraFollowObjectÀÇ ¿ùµå È¸Àü¿¡¼­ YÃà °ª¸¸ °¡Á®¿È
+                // cameraFollowObjectï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Yï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 float cameraYRotation = cameraFollowObject.transform.eulerAngles.y;
 
-                // ÇÃ·¹ÀÌ¾îÀÇ ÇöÀç È¸Àü¿¡¼­ YÃà¸¸ ¾÷µ¥ÀÌÆ®
+                // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Yï¿½à¸¸ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
                 Vector3 playerRotation = transform.eulerAngles;
                 playerRotation.y = cameraYRotation;
                 transform.eulerAngles = playerRotation;
@@ -243,7 +243,7 @@ public class PlayerController : MonoBehaviour
                 currentXRotation -= rotateX;
                 currentXRotation = Mathf.Clamp(currentXRotation, -maxXAngle, maxXAngle);
 
-                // cameraFollowObject¸¸ È¸Àü, ÇÃ·¹ÀÌ¾î È¸Àü°ú µ¶¸³
+                // cameraFollowObjectï¿½ï¿½ È¸ï¿½ï¿½, ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 cameraFollowObject.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0f);
             }
         }
@@ -280,12 +280,12 @@ public class PlayerController : MonoBehaviour
             _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
         }
 
-        if (!_isEvading) // Evade ÁßÀÌ ¾Æ´Ò ¶§¸¸ ÀÏ¹Ý ÀÌµ¿
+        if (!_isEvading) // Evade ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï¹ï¿½ ï¿½Ìµï¿½
         {
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
         }
 
-        // Zoom »óÅÂ ¾Ö´Ï¸ÞÀÌ¼Ç
+        // Zoom ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½
         if (_hasAnimator && _input.move != Vector2.zero && !_isEvading)
         {
             Vector3 moveDirection = targetDirection.normalized;
@@ -295,29 +295,29 @@ public class PlayerController : MonoBehaviour
 
             float angle = Vector3.SignedAngle(cameraForward, moveDirection, Vector3.up);
 
-            // ¹æÇâº° ¾Ö´Ï¸ÞÀÌ¼Ç ¼³Á¤
-            if (angle >= -55f && angle <= 55f) // ¾Õ (Front)
+            // ï¿½ï¿½ï¿½âº° ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+            if (angle >= -55f && angle <= 55f) // ï¿½ï¿½ (Front)
             {
                 _animator.SetBool(_animIDFrontMove, true);
                 _animator.SetBool(_animIDBackMove, false);
                 _animator.SetBool(_animIDRightMove, false);
                 _animator.SetBool(_animIDLeftMove, false);
             }
-            else if (angle >= 125f || angle <= -125f) // µÚ (Back)
+            else if (angle >= 125f || angle <= -125f) // ï¿½ï¿½ (Back)
             {
                 _animator.SetBool(_animIDFrontMove, false);
                 _animator.SetBool(_animIDBackMove, true);
                 _animator.SetBool(_animIDRightMove, false);
                 _animator.SetBool(_animIDLeftMove, false);
             }
-            else if (angle > 55f && angle < 125f) // ¿À¸¥ÂÊ (Right)
+            else if (angle > 55f && angle < 125f) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (Right)
             {
                 _animator.SetBool(_animIDFrontMove, false);
                 _animator.SetBool(_animIDBackMove, false);
                 _animator.SetBool(_animIDRightMove, true);
                 _animator.SetBool(_animIDLeftMove, false);
             }
-            else if (angle < -55f && angle > -125f) // ¿ÞÂÊ (Left)
+            else if (angle < -55f && angle > -125f) // ï¿½ï¿½ï¿½ï¿½ (Left)
             {
                 _animator.SetBool(_animIDFrontMove, false);
                 _animator.SetBool(_animIDBackMove, false);
@@ -327,7 +327,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (_hasAnimator && !_isEvading)
         {
-            // ÀÌµ¿ÀÌ ¾øÀ¸¸é ¸ðµç ¹æÇâ ¾Ö´Ï¸ÞÀÌ¼Ç ²û
+            // ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½
             _animator.SetBool(_animIDFrontMove, false);
             _animator.SetBool(_animIDBackMove, false);
             _animator.SetBool(_animIDRightMove, false);
@@ -372,7 +372,7 @@ public class PlayerController : MonoBehaviour
 
         _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-        // Default »óÅÂ ¾Ö´Ï¸ÞÀÌ¼Ç: ¹æÇâº° Bool °ª Á¶Á¤
+        // Default ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½: ï¿½ï¿½ï¿½âº° Bool ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (_hasAnimator && _input.move != Vector2.zero)
         {
             Vector3 moveDirection = targetDirection.normalized;
@@ -382,29 +382,29 @@ public class PlayerController : MonoBehaviour
 
             float angle = Vector3.SignedAngle(cameraForward, moveDirection, Vector3.up);
 
-            // ¹æÇâº° ¾Ö´Ï¸ÞÀÌ¼Ç ¼³Á¤
-            if (angle >= -55f && angle <= 55f) // ¾Õ (Front)
+            // ï¿½ï¿½ï¿½âº° ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+            if (angle >= -55f && angle <= 55f) // ï¿½ï¿½ (Front)
             {
                 _animator.SetBool(_animIDFrontMove, true);
                 _animator.SetBool(_animIDBackMove, false);
                 _animator.SetBool(_animIDRightMove, false);
                 _animator.SetBool(_animIDLeftMove, false);
             }
-            else if (angle >= 135f || angle <= -135f) // µÚ (Back)
+            else if (angle >= 135f || angle <= -135f) // ï¿½ï¿½ (Back)
             {
                 _animator.SetBool(_animIDFrontMove, false);
                 _animator.SetBool(_animIDBackMove, true);
                 _animator.SetBool(_animIDRightMove, false);
                 _animator.SetBool(_animIDLeftMove, false);
             }
-            else if (angle > 55f && angle < 135f) // ¿À¸¥ÂÊ (Right)
+            else if (angle > 55f && angle < 135f) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (Right)
             {
                 _animator.SetBool(_animIDFrontMove, false);
                 _animator.SetBool(_animIDBackMove, false);
                 _animator.SetBool(_animIDRightMove, true);
                 _animator.SetBool(_animIDLeftMove, false);
             }
-            else if (angle < -55f && angle > -135f) // ¿ÞÂÊ (Left)
+            else if (angle < -55f && angle > -135f) // ï¿½ï¿½ï¿½ï¿½ (Left)
             {
                 _animator.SetBool(_animIDFrontMove, false);
                 _animator.SetBool(_animIDBackMove, false);
@@ -414,7 +414,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (_hasAnimator)
         {
-            // ÀÌµ¿ÀÌ ¾øÀ¸¸é ¸ðµç ¹æÇâ ¾Ö´Ï¸ÞÀÌ¼Ç ²û
+            // ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½
             _animator.SetBool(_animIDFrontMove, false);
             _animator.SetBool(_animIDBackMove, false);
             _animator.SetBool(_animIDRightMove, false);
@@ -433,17 +433,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Gizmos·Î ±¸Ã¼ ±×¸®±â
+    // Gizmosï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½×¸ï¿½ï¿½ï¿½
     private void OnDrawGizmos()
     {
         Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
-        Gizmos.color = Color.red; // ±¸Ã¼ »ö»ó ¼³Á¤
-        Gizmos.DrawWireSphere(spherePosition, GroundedRadius); // ±¸Ã¼ ±×¸®±â
+        Gizmos.color = Color.red; // ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        Gizmos.DrawWireSphere(spherePosition, GroundedRadius); // ï¿½ï¿½Ã¼ ï¿½×¸ï¿½ï¿½ï¿½
     }
 
     private void JumpAndGravity()
     {
-        if (Grounded) // ¶¥¿¡ ÀÖÀ» ¶§
+        if (Grounded) // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
         {
             _fallTimeoutDelta = FallTimeout;
 
@@ -458,7 +458,7 @@ public class PlayerController : MonoBehaviour
                 _verticalVelocity = -2f;
             }
 
-            // Á¡ÇÁ Äð´Ù¿î °¨¼Ò (Move()¿¡¼­ Ã³¸®ÇÏ´ø °ÍÀ» ¿©±â·Î ÀÌµ¿)
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½ (Move()ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½)
             if (_jumpTimeoutDelta >= 0.0f)
             {
                 _jumpTimeoutDelta -= Time.deltaTime;
@@ -466,7 +466,7 @@ public class PlayerController : MonoBehaviour
 
             if (_input.jump && _jumpTimeoutDelta <= 0.0f)
             {
-                Debug.Log("Á¡ÇÁ ½ÇÇà - Velocity: " + _verticalVelocity);
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ - Velocity: " + _verticalVelocity);
                 _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
                 if (_hasAnimator)
                 {
@@ -474,7 +474,7 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-        else // °øÁß
+        else // ï¿½ï¿½ï¿½ï¿½
         {
             _jumpTimeoutDelta = JumpTimeout;
 
@@ -487,7 +487,7 @@ public class PlayerController : MonoBehaviour
                 _animator.SetBool(_animIDFreeFall, true);
             }
 
-            _input.jump = false; // ÀÔ·Â ¸®¼Â
+            _input.jump = false; // ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
 
         if (_verticalVelocity < _terminalVelocity)
@@ -646,8 +646,11 @@ public class PlayerController : MonoBehaviour
 
         Instantiate((GameObject)Resources.Load("HW/PlayerDeathParticle"), transform.position, Quaternion.identity);
 
-        Scene currentScene = SceneManager.GetActiveScene(); // ÇöÀç È°¼º ¾À °¡Á®¿À±â
-        SceneManager.LoadScene(currentScene.name); // ÇöÀç ¾À ÀÌ¸§À¸·Î ´Ù½Ã ·Îµå
+        GameManager.Instance.SetPlayerLocation();
+
+        Scene currentScene = SceneManager.GetActiveScene(); // ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        SceneManager.LoadScene(currentScene.name); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½Îµï¿½
+
         //GameManager.ShowRetryUI();
     }
 }

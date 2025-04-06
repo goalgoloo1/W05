@@ -60,6 +60,8 @@ public class PlayerManager : MonoBehaviour
         ////Slider Settings.
         //reloadingTimeSlider.minValue = 0;
         //reloadingTimeSlider.maxValue = reloadingTime;
+
+        GameManager.Instance.SetPlayerLocation();
     }
 
     private void Update()

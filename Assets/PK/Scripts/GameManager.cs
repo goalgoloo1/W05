@@ -26,8 +26,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] MenuUIManager menuUIManager;
     [SerializeField] List<string> stageTitle;
     private string menuScene;
-    private Vector3 resetPos; // If null, starting on the position where the player has been spawnned
-    private bool useResetPos; // If null, starting on the position where the player has been spawnned
+    [SerializeField] Vector3 resetPos; // If null, starting on the position where the player has been spawnned
+    [SerializeField] bool useResetPos; // If null, starting on the position where the player has been spawnned
     private GameObject playerSelf;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -113,7 +113,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    void SetPlayerLocation()
+    internal void SetPlayerLocation()
     {
         if(useResetPos)
         {
@@ -121,7 +121,11 @@ public class GameManager : MonoBehaviour
             if (playerSelf != null)
             {
                 playerSelf.transform.position = resetPos + (Vector3.up * 1.2f);
-            };
+            }
+            else
+            {
+                Debug.LogError("There are no players");
+            }
         }
     }
 }
