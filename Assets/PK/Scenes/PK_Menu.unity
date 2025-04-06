@@ -154,8 +154,9 @@ MonoBehaviour:
   audioManager: {fileID: 0}
   menuUIManager: {fileID: 0}
   stageTitle:
-  - SU_Scene
-  - SU_Scene2
+  - Main_Scene1
+  - Main_Scene2
+  - Main_Scene3
 --- !u!4 &97457874
 Transform:
   m_ObjectHideFlags: 0
