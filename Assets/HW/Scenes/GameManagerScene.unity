@@ -248,6 +248,8 @@ MonoBehaviour:
   maxBulletCount: 3
   initialBulletCount: 3
   remainingBullet: 3
+  evadeTimeout: 1.5
+  evadeTimeoutDelta: 0
   reloadingTimeSlider: {fileID: 0}
   fireCoolDownSlider: {fileID: 0}
 --- !u!1 &125009726
@@ -2774,7 +2776,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1583457803
 RectTransform:
   m_ObjectHideFlags: 0
