@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] AudioManager audioManager;
     [SerializeField] MenuUIManager menuUIManager;
     [SerializeField] List<string> stageTitle;
+    private string menuScene;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -37,6 +38,8 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         InitializeManagers();
+
+        menuScene = SceneManager.GetActiveScene().name;
     }
 
     private void InitializeManagers()
@@ -60,7 +63,17 @@ public class GameManager : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
-        StartCoroutine(MenuUIManager.Instance.SetFadeImage(true));
+        StartCoroutine(menuScene);
+    }
+
+    public void ResetScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void GoToMenu()
+    {
+        SceneManager.LoadScene(menuScene);
     }
 
     bool IsSceneInBuild(string sceneName)
