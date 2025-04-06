@@ -2085,33 +2085,37 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 542853675245343159, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: smoothSpeed
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 835060089079656968, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.070856094
+      value: -0.41585732
       objectReference: {fileID: 0}
     - target: {fileID: 835060089079656968, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.4839997
+      value: 2.9594154
       objectReference: {fileID: 0}
     - target: {fileID: 835060089079656968, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.582663
+      value: -2.5520391
       objectReference: {fileID: 0}
     - target: {fileID: 835060089079656968, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9914449
+      value: 0.90849537
       objectReference: {fileID: 0}
     - target: {fileID: 835060089079656968, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -2.954736e-10
+      value: 0.417895
       objectReference: {fileID: 0}
     - target: {fileID: 835060089079656968, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.13052616
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 835060089079656968, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 3.889983e-11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1132180087756367896, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2239,7 +2243,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5276304948148212765, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: field of view
-      value: 60
+      value: 60.000004
       objectReference: {fileID: 0}
     - target: {fileID: 8853149398719285695, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: m_UpdateMode
