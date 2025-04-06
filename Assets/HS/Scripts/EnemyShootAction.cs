@@ -130,7 +130,9 @@ public partial class EnemyShootAction : Action
         currentAimDirection = (targetPosition - firePointPosition).normalized;
 
         // 레이저 라인 업데이트
-        lineRenderer.enabled = true;
+        //lineRenderer.enabled = true;
+        // 랜더러 활성화 여부를 shootTimer에 따라 결정
+        lineRenderer.enabled = shootTimer > 0.7f;
         lineRenderer.positionCount = 2;
         lineRenderer.SetPosition(0, firePointPosition);
 
