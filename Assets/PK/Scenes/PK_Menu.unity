@@ -157,6 +157,8 @@ MonoBehaviour:
   - Main_Scene1
   - Main_Scene2
   - Main_Scene3
+  resetPos: {x: 0, y: 0, z: 0}
+  useResetPos: 0
 --- !u!4 &97457874
 Transform:
   m_ObjectHideFlags: 0
@@ -3025,6 +3027,8 @@ MonoBehaviour:
   - {fileID: 903308507}
   levelSelectGroup: {fileID: 609344008}
   fadeFrames: {fileID: 352402551}
+  ingameMenuGameover: {fileID: 0}
+  ingameMenuComplete: {fileID: 0}
 --- !u!1 &1435701933
 GameObject:
   m_ObjectHideFlags: 0

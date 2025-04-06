@@ -19,6 +19,10 @@ public class MenuUIManager : MonoBehaviour
     [SerializeField] GameObject fadeFrames;
     private float fadeDuration = 1f;
 
+    [Header("Ingame Menu")]
+    [SerializeField] IngameMenuGameover ingameMenuGameover;
+    [SerializeField] IngameMenuComplete ingameMenuComplete;
+
     void Start()
     {
         Instance = this;
@@ -100,5 +104,30 @@ public class MenuUIManager : MonoBehaviour
         {
             fadeFrames.gameObject.SetActive(false);
         }
+    }
+
+    internal void SetMenuUIGameover(IngameMenuGameover menu)
+    {
+        ingameMenuGameover = menu;
+        ingameMenuGameover.gameObject.SetActive(false);
+    }
+
+    internal void ShowMenuUIGameover()
+    {
+        ingameMenuGameover.gameObject.SetActive(true);
+        ingameMenuGameover.SetGameover();
+
+    }
+
+    internal void SetMenuUIComplete(IngameMenuComplete menu)
+    {
+        ingameMenuComplete = menu;
+        ingameMenuComplete.gameObject.SetActive(false);
+    }
+
+    internal void ShowMenuUIComplete()
+    {
+        ingameMenuComplete.gameObject.SetActive(true);
+        ingameMenuComplete.SetComplete();
     }
 }
