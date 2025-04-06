@@ -109,15 +109,25 @@ public class MenuUIManager : MonoBehaviour
     internal void SetMenuUIGameover(IngameMenuGameover menu)
     {
         ingameMenuGameover = menu;
+        ingameMenuGameover.gameObject.SetActive(false);
     }
 
     internal void ShowMenuUIGameover()
     {
+        ingameMenuGameover.gameObject.SetActive(true);
         ingameMenuGameover.SetGameover();
+
     }
 
     internal void SetMenuUIComplete(IngameMenuComplete menu)
     {
         ingameMenuComplete = menu;
+        ingameMenuComplete.gameObject.SetActive(false);
+    }
+
+    internal void ShowMenuUIComplete()
+    {
+        ingameMenuComplete.gameObject.SetActive(true);
+        ingameMenuComplete.SetComplete();
     }
 }
