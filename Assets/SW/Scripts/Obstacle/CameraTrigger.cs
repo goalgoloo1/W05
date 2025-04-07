@@ -25,18 +25,27 @@ public class CameraTrigger : MonoBehaviour
 
     public void StartTrigger()
     {
-        StartCoroutine(startTrigger_CO());
-
+        StartCoroutine(StartTriggerCo());
     }
-    IEnumerator startTrigger_CO()
+
+    IEnumerator StartTriggerCo()
     {
         _cinemachineBar.GetComponent<Canvas>().enabled = true;
         settingCamera.SetActive(true);
         _playerController.SetMoveable(true);
+
+        //Disable HUD
+        IngameInfoScreen.Instance = FindAnyObjectByType<IngameInfoScreen>();
+        IngameInfoScreen.Instance.SetVisible(false);
+
         yield return new WaitForSeconds(returnTime);
         _playerController.SetMoveable(false);
         settingCamera.SetActive(false);
         gameObject.SetActive(false);
+
+        //Enable HUD
+        IngameInfoScreen.Instance.SetVisible(true);
+
         _cinemachineBar.GetComponent<Canvas>().enabled = false;
     }
 }

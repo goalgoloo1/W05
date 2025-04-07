@@ -11,6 +11,8 @@ public class GameInfoManager : MonoBehaviour
     private void Awake()
     {
         _instance = this;
+
+        // Load Ingame UI
     }
 
     public float systemTime; //���ӽð�
@@ -19,18 +21,17 @@ public class GameInfoManager : MonoBehaviour
     private void Start()
     {
         InitializeProperties();
+        IngameInfoScreen.Instance = FindAnyObjectByType<IngameInfoScreen>();
     }
 
     private void InitializeProperties()
     {
-        systemTime = 0f; //���� �ð� -> 0
+        systemTime = GameManager.Instance.GetElapsedTime();
     }
 
     private void Update()
     {
         UpdateTime();
-            
-
     }
 
     private void UpdateTime()
