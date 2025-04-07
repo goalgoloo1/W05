@@ -665,13 +665,15 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log("player Death");
         if (!_isMoveDisabled) AudioManager.Instance.PlayClipPrefix(GetComponent<AudioSource>(), "FX_Player_Death");
+        _isMoveDisabled = true;
 
         Instantiate((GameObject)Resources.Load("HW/PlayerDeathParticle"), transform.position, Quaternion.identity);
-        //_isMoveDisabled = true;
+        Invoke(nameof(Death2), 1.6f);
+    }
+
+    void Death2()
+    {
         Destroy(gameObject);
-        //Scene currentScene = SceneManager.GetActiveScene(); // ���� Ȱ�� �� ��������
-        //SceneManager.LoadScene(currentScene.name); // ���� �� �̸����� �ٽ� �ε�
-        _isMoveDisabled = true;
 
         MenuUIManager.Instance.ShowMenuUIGameover();
     }
