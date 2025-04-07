@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -28,6 +29,22 @@ public class AudioClipPackType : ScriptableObject
             return found.clipOfTag;
         }
         Debug.LogWarning($"Audio clip with tag '{audioTagName}' not found in {name}.");
+        return null;
+    }
+
+    public AudioClip GetClipsWithPrefix(string audioTagName)
+    {
+        // 접두사로 시작하는 모든 AudioTagObject 찾기
+        List<AudioTagObject> found = audioClips.FindAll(tag => tag.audioTagName.StartsWith(audioTagName));
+        
+        if (found != null && found.Count > 0)
+        {
+            // 찾은 태그들의 클립을 리스트로 변환
+            List<AudioClip> clips = found.Select(tag => tag.clipOfTag).ToList();
+            return clips[Random.Range(0, clips.Count)];
+        }
+
+        Debug.LogWarning($"No audio clips with prefix '{audioTagName}' found in {name}.");
         return null;
     }
 }

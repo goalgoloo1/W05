@@ -37,3 +37,5 @@ MonoBehaviour:
     clipOfTag: {fileID: 8300000, guid: 26afb8c7a67d38f45bb5669432fec285, type: 3}
   - audioTagName: FX_Env_Checkpoint
     clipOfTag: {fileID: 8300000, guid: 7b71b98c0709a8d4f85f32d61c6affe4, type: 3}
+  - audioTagName: FX_Env_Swish
+    clipOfTag: {fileID: 8300000, guid: 3d742bdc0435f294890f12d9cfd31e6e, type: 3}

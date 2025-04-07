@@ -83,6 +83,8 @@ public class PlayerController : MonoBehaviour
     private bool _isEvading; // Evade ������ ����
     private bool _isMoveDisabled; //������ �� ���� ����.
 
+    private float footStep;
+
     // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
@@ -152,6 +154,8 @@ public class PlayerController : MonoBehaviour
         JumpAndGravity();
         GroundedCheck();
         Move();
+
+        MakeFootSound();
     }
 
     private void Move()
@@ -466,7 +470,7 @@ public class PlayerController : MonoBehaviour
 
             if (_input.jump && _jumpTimeoutDelta <= 0.0f)
             {
-                Debug.Log("���� ���� - Velocity: " + _verticalVelocity);
+                //Debug.Log("���� ���� - Velocity: " + _verticalVelocity);
                 _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
                 if (_hasAnimator)
                 {
@@ -514,6 +518,8 @@ public class PlayerController : MonoBehaviour
             cameraRight = cameraRight.normalized;
 
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+            AudioManager.Instance.PlayClip(GetComponent<AudioSource>(), "FX_Env_Swish");
 
             if (inputDirection.magnitude > 0.1f)
             {
@@ -616,6 +622,19 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void MakeFootSound()
+    {
+        if (_input.move != Vector2.zero && Grounded && footStep > (_input.isZooming ? 0.525f : 0.3f))
+        {
+            AudioManager.Instance.PlayClipPrefix(GetComponent<AudioSource>(), "FX_Player_Walking");
+            footStep = 0;
+        }
+        else
+        {
+            footStep += Time.deltaTime;
+        }
+    }
+
     public void SetMoveable(bool value)
     {
         _isMoveDisabled = value;
@@ -637,6 +656,7 @@ public class PlayerController : MonoBehaviour
             playerBullet.GetComponent<PlayerBulletMovement>().SetTargetPosition(aimingTarget);
 
             playerManager.Shot();
+            AudioManager.Instance.PlayClipPrefix(GetComponent<AudioSource>(), "FX_Player_Shot");
         }
 
     }
@@ -644,12 +664,14 @@ public class PlayerController : MonoBehaviour
     public void OnDeath()
     {
         Debug.Log("player Death");
+        if (!_isMoveDisabled) AudioManager.Instance.PlayClipPrefix(GetComponent<AudioSource>(), "FX_Player_Death");
 
         Instantiate((GameObject)Resources.Load("HW/PlayerDeathParticle"), transform.position, Quaternion.identity);
         //_isMoveDisabled = true;
         Destroy(gameObject);
         //Scene currentScene = SceneManager.GetActiveScene(); // ���� Ȱ�� �� ��������
         //SceneManager.LoadScene(currentScene.name); // ���� �� �̸����� �ٽ� �ε�
+        _isMoveDisabled = true;
 
         MenuUIManager.Instance.ShowMenuUIGameover();
     }
