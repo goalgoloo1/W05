@@ -13,6 +13,7 @@ public class IngameMenuComplete : MonoBehaviour
     void Start()
     {
         transformBasis = GetComponent<RectTransform>();
+        //CursorManager.Instance.SetCursorVisible();
         MenuUIManager.Instance.SetMenuUIComplete(this);
     }
     internal void SetComplete(string stageName, float elapsedTime)
