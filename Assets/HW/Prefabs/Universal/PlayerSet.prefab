@@ -4371,6 +4371,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3454401474477121926, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: AvoidObstacles.IgnoreTag
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3454401474477121926, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: AvoidObstacles.CollisionFilter.m_Bits
+      value: 265
+      objectReference: {fileID: 0}
+    - target: {fileID: 4366592499444580446, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: AvoidObstacles.IgnoreTag
+      value: Player
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
