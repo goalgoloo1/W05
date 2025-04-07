@@ -439,7 +439,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7043791609126951051, guid: 598e638383071c8408f774e53566ac95, type: 3}
       propertyPath: AvoidObstacles.Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8262324444952754515, guid: 598e638383071c8408f774e53566ac95, type: 3}
+      propertyPath: AvoidObstacles.Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8654388255257591014, guid: 598e638383071c8408f774e53566ac95, type: 3}
       propertyPath: evadeRange
