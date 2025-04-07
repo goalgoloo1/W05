@@ -23,6 +23,7 @@ public class ArriveEnding : MonoBehaviour
     
     IEnumerator End_Co()
     {
+        /*
         while (true)
         {
             endImage1.transform.localScale = Vector3.Lerp(endImage1.transform.localScale, Vector3.one * 30, Time.deltaTime * 5);
@@ -33,6 +34,11 @@ public class ArriveEnding : MonoBehaviour
             }
             yield return null;
         }
-        SceneManager.LoadScene(sceneName);
+        */
+        yield return new WaitForSeconds(1f);
+
+        MenuUIManager.Instance.ShowMenuUIComplete(sceneName, GameInfoManager.Instance.systemTime);
+
+        //SceneManager.LoadScene(sceneName);
     }
 }

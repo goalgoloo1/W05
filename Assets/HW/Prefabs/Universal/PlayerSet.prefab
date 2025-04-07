@@ -1644,7 +1644,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3916620205584577697}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -2945,7 +2945,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6182891586139385083}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -2961,6 +2961,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00055920e3f068c4686de1f2a71bbaa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextStageBtn: {fileID: 557989773081237243}
+  recordText: {fileID: 6451316847247811727}
 --- !u!1 &6410553817797413334
 GameObject:
   m_ObjectHideFlags: 0
@@ -3878,8 +3880,9 @@ GameObject:
   - component: {fileID: 911945217718789789}
   - component: {fileID: 3515589601683909897}
   - component: {fileID: 8931685333192958928}
+  - component: {fileID: 557989773081237243}
   m_Layer: 5
-  m_Name: ContinueBtn
+  m_Name: NextStageBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3987,6 +3990,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &557989773081237243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8931124063521826566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a2c256a153c3cc4a8a0e7e41304cea2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9021905563796597252
 GameObject:
   m_ObjectHideFlags: 0
@@ -4267,6 +4282,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1119067091543990279}
     m_Modifications:
+    - target: {fileID: 383319199334860794, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.000000004505052
+      objectReference: {fileID: 0}
+    - target: {fileID: 383319199334860794, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -5.931012e-10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132180087756367896, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -2.954736e-10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132180087756367896, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 3.889983e-11
+      objectReference: {fileID: 0}
     - target: {fileID: 2105999862951514260, guid: b46a2e1db8f311748977f0eeca2db272, type: 3}
       propertyPath: m_Name
       value: PlayerWithCamera
