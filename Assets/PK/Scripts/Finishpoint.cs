@@ -17,6 +17,8 @@ public class Finishpoint : MonoBehaviour
 
         SaveManager.Instance.SetProgress(SceneNo);
         SaveManager.Instance.Save();
+
+        AudioManager.Instance.PlayClipPrefix(null, "FX_Env_Finish");
         StartCoroutine(ShowNextScene());
     }
 

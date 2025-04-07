@@ -17,6 +17,7 @@ public class Checkpoint : MonoBehaviour
         if(playerController)
         {
             Debug.Log("Player has reached checkpoint");
+            AudioManager.Instance.PlayClip(null, "FX_Env_Checkpoint");
             GameManager.Instance.SetCheckPoint(transform.position);
         }        
     }

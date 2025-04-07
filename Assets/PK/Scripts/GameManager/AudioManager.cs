@@ -25,6 +25,18 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void PlayClipPrefix(AudioSource source, string audioClipCode)
+    {
+        if(source == null)
+        {
+            mainAudioSource.PlayOneShot(audioClipPack.GetClipsWithPrefix(audioClipCode));
+        }
+        else
+        {
+            source.PlayOneShot(audioClipPack.GetClipsWithPrefix(audioClipCode));
+        }
+    }
+
     public void SetVolume(float volumeValue)
     {
         mainAudioSource.volume = volumeValue;
