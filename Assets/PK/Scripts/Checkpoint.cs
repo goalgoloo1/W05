@@ -7,8 +7,8 @@ public class Checkpoint : MonoBehaviour
     
     void Start()
     {
-        checkpoints.Add(this);
-        Debug.Log("Currently this scene has " + checkpoints.Count + " checkpoints");
+        //checkpoints.Add(this);
+        //Debug.Log("Currently this scene has " + checkpoints.Count + " checkpoints");
     }
 
     void OnTriggerEnter(Collider col)
