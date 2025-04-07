@@ -141,6 +141,7 @@ public class PlayerController : MonoBehaviour
         if(GameManager.Instance.useResetPos)
         {
             transform.position = checkPointTransform.position + Vector3.up * 1.2f;
+            transform.rotation = checkPointTransform.rotation;
         }
     }
 
