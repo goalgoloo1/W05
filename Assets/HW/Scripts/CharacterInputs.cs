@@ -39,16 +39,15 @@ public class CharacterInputs : MonoBehaviour
 
     void Update()
     {
-        //float threshold = 0.01f; // 임계값 설정 (조정 가능)
-        //if (rawLook.magnitude < threshold) // 입력이 충분히 작으면 멈춤
-        //{
-        //    look = Vector2.zero;
-        //}
-        //else
-        //{
-        //    look = Vector2.Lerp(look, rawLook, smoothSpeed * Time.deltaTime);
-        //}
-        look = rawLook;
+        float threshold = 0.001f; // 임계값 설정 (조정 가능)
+        if (rawLook.magnitude < threshold) // 입력이 충분히 작으면 멈춤
+        {
+            look = Vector2.zero;
+        }
+        else
+        {
+            look = Vector2.Lerp(look, rawLook, smoothSpeed * Time.deltaTime);
+        }
     }
 
 
