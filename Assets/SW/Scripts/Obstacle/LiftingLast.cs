@@ -9,6 +9,7 @@ public class LiftingLast : MonoBehaviour
     private Transform[] _targetPos;
     private CinemachineImpulseSource _impulseSource;
     [SerializeField] private Vector3 dir;
+    private bool _isMove;
 
     private void Start()
     {
@@ -28,8 +29,9 @@ public class LiftingLast : MonoBehaviour
     // 플레이어가 가까이와서 줄에 걸렸을 때
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.tag == "Player" && !_isMove)
         {
+            _isMove = true;
             _player = other.gameObject;
             StartCoroutine(PlayerUp_CO());
         }
@@ -68,7 +70,7 @@ public class LiftingLast : MonoBehaviour
 
         while (true)
         {
-            _player.transform.position += target2Dir * Time.deltaTime * 5;
+            _player.transform.position += target2Dir * Time.deltaTime * 10;
             if (_targetPos[1].position.x - _player.transform.position.x > 0.1)
             {
                 _impulseSource.GenerateImpulse();
@@ -77,8 +79,10 @@ public class LiftingLast : MonoBehaviour
             }
             yield return null;
         }
-
+        print("fir " + _player.GetComponent<PlayerController>().Gravity);
         _player.GetComponent<PlayerController>().Gravity = initGravity;
+        print("sec " + _player.GetComponent<PlayerController>().Gravity);
         _player.GetComponent<PlayerController>().SetMoveable(false);
+        _isMove = false;
     }
 }
