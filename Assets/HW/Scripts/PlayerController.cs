@@ -646,8 +646,8 @@ public class PlayerController : MonoBehaviour
         Debug.Log("player Death");
 
         Instantiate((GameObject)Resources.Load("HW/PlayerDeathParticle"), transform.position, Quaternion.identity);
-        _isMoveDisabled = true;
-
+        //_isMoveDisabled = true;
+        Destroy(gameObject);
         //Scene currentScene = SceneManager.GetActiveScene(); // ���� Ȱ�� �� ��������
         //SceneManager.LoadScene(currentScene.name); // ���� �� �̸����� �ٽ� �ε�
 

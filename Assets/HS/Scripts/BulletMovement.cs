@@ -28,7 +28,7 @@ public class BulletMovement : MonoBehaviour
         //{
         //    TEMPGameManager.Instance.OnBulletCollision(gameObject, collision.gameObject);
         //}
-        Debug.Log(collision.gameObject);
+        //Debug.Log(collision.gameObject);
 
         if(collision.gameObject.CompareTag("Player"))
         {
