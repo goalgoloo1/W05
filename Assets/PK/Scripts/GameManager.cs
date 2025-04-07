@@ -26,9 +26,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] MenuUIManager menuUIManager;
     [SerializeField] List<string> stageTitle;
     private string menuScene;
-    [SerializeField] Vector3 resetPos; // If null, starting on the position where the player has been spawnned
-    [SerializeField] bool useResetPos; // If null, starting on the position where the player has been spawnned
+    private Vector3 resetPos; // If null, starting on the position where the player has been spawnned
+    private bool useResetPos; // If null, starting on the position where the player has been spawnned
     private GameObject playerSelf;
+    private float elapsedTimeOnStage;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -105,6 +106,7 @@ public class GameManager : MonoBehaviour
     {
         useResetPos = true;
         resetPos = position;
+        elapsedTimeOnStage = GameInfoManager.Instance.systemTime;
     }
 
     internal void ResetCheckPoint()
@@ -112,6 +114,10 @@ public class GameManager : MonoBehaviour
         useResetPos = false;
     }
 
+    internal float GetElapsedTime()
+    {
+        return useResetPos ? elapsedTimeOnStage : 0f;
+    }
 
     internal void SetPlayerLocation()
     {

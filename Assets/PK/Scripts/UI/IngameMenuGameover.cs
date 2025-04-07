@@ -15,6 +15,9 @@ public class IngameMenuGameover : MonoBehaviour
 
     internal void SetGameover()
     {
+        Cursor.lockState = CursorLockMode.None; // 마우스 잠금 해제
+        Cursor.visible = true; // 커서 보이게 하기
+
         StartCoroutine(SetGameoverCo());
     }
 
