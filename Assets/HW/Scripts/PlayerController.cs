@@ -112,8 +112,14 @@ public class PlayerController : MonoBehaviour
 
     private bool _hasAnimator;
 
+    private void Awake()
+    {
+        CursorManager.Instance.SetCursorInvisible();
+    }
+
     private void Start()
     {
+
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<CharacterInputs>();
         _playerInput = GetComponent<PlayerInput>();
@@ -575,28 +581,29 @@ public class PlayerController : MonoBehaviour
     {
         Time.timeScale = 0.3f;
         
-        _controller.detectCollisions = false;
+        //_controller.detectCollisions = false;
 
         yield return new WaitForSecondsRealtime(bulletTimeTime);
 
         //targetGroup.RemoveMember(enemyObject.transform);
+        //_controller.detectCollisions = true;
         Time.timeScale = 1f;
+        evadeSuccess = false;
 
-        _controller.detectCollisions = true;
 
         //CameraController.Instance.ReturnCamera(enemyTrackCamera);
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.CompareTag("Bullet"))
-        {
-            if (evadeSuccess == false)
-            {
-                evadeSuccess = true;
-            }
-        }
-    }
+    //private void OnTriggerStay(Collider other)
+    //{
+    //    if (other.CompareTag("Bullet"))
+    //    {
+    //        if (evadeSuccess == false)
+    //        {
+    //            evadeSuccess = true;
+    //        }
+    //    }
+    //}
 
     private void OnTriggerEnter(Collider other)
     {
@@ -610,17 +617,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Bullet"))
-        {
-            if (evadeSuccess == false)
-            {
-                evadeSuccess = true;
-                OnEvadeSuccess(other.gameObject);
-            }
-        }
-    }
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    if (other.CompareTag("Bullet"))
+    //    {
+    //        if (evadeSuccess == false)
+    //        {
+    //            evadeSuccess = true;
+    //            OnEvadeSuccess(other.gameObject);
+    //        }
+    //    }
+    //}
 
     public void MakeFootSound()
     {
@@ -676,5 +683,6 @@ public class PlayerController : MonoBehaviour
         Destroy(gameObject);
 
         MenuUIManager.Instance.ShowMenuUIGameover();
+        CursorManager.Instance.SetCursorVisible();
     }
 }
