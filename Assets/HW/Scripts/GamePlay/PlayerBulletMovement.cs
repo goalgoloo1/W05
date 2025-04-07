@@ -17,7 +17,7 @@ public class PlayerBulletMovement : MonoBehaviour
             rb.freezeRotation = true; // 회전 고정
         }
 
-        Destroy(gameObject, 5f);
+        Destroy(gameObject, 0.5f);
     }
 
     public void SetTargetPosition(Vector3 targetPosition)
