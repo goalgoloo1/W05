@@ -125,9 +125,12 @@ public class MenuUIManager : MonoBehaviour
         ingameMenuComplete.gameObject.SetActive(false);
     }
 
-    internal void ShowMenuUIComplete()
+    internal void ShowMenuUIComplete(string stageName, float elapsedTime)
     {
         ingameMenuComplete.gameObject.SetActive(true);
-        ingameMenuComplete.SetComplete();
+        IngameInfoScreen.Instance.GetComponent<CanvasGroup>().alpha = 0;
+
+        Debug.Log("Going to " + stageName);
+        ingameMenuComplete.SetComplete(stageName, elapsedTime);
     }
 }
