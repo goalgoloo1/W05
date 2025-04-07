@@ -27,8 +27,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] MenuUIManager menuUIManager;
     [SerializeField] List<string> stageTitle;
     private string menuScene;
-    private Vector3 resetPos; // If null, starting on the position where the player has been spawnned
-    private bool useResetPos; // If null, starting on the position where the player has been spawnned
+    public Vector3 resetPos; // If null, starting on the position where the player has been spawnned
+    public bool useResetPos; // If null, starting on the position where the player has been spawnned
     private GameObject playerSelf;
     private float elapsedTimeOnStage;
 

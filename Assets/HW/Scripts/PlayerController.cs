@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour
     //private bool wasZoomingLastFrame = false; // �� ���� ����
 
     private bool _hasAnimator;
-
+    [SerializeField] Transform checkPointTransform;
     private void Awake()
     {
         CursorManager.Instance.SetCursorInvisible();
@@ -137,6 +137,11 @@ public class PlayerController : MonoBehaviour
 
         _input.onFireAction += Fire;
         _input.onEvadeAction += PerformEvade;
+
+        if(GameManager.Instance.useResetPos)
+        {
+            transform.position = checkPointTransform.position + Vector3.up * 1.2f;
+        }
     }
 
     private void AssignAnimationIDs()
