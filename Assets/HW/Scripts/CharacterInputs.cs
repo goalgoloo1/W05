@@ -115,14 +115,14 @@ public class CharacterInputs : MonoBehaviour
 
     public void OnSensitivityUp(InputValue value)
     {
-        sensitivityQuotinent += 0.1f;
+        sensitivityQuotinent += 0.05f;
 
 
     }
 
     public void OnSensitivityDown(InputValue value)
     {
-        sensitivityQuotinent -= 0.1f;
+        sensitivityQuotinent -= 0.05f;
 
         if (sensitivityQuotinent <= 0f)
         {
