@@ -13,9 +13,12 @@ public class CharacterInputs : MonoBehaviour
     [SerializeField] PlayerInput playerInput;
     [SerializeField] CinemachineCamera defaultCamera;
     [SerializeField] CinemachineCamera zoomInCamera;
+    [SerializeField] InputActionAsset inputActionAsset;
 
     public Action onFireAction;
     public Action onEvadeAction;
+    //public Action onSensitivityUpAction;
+    //public Action onSensitivityDownAction;
 
     [Header("Character Input Values")]
     public Vector2 move;
@@ -23,6 +26,7 @@ public class CharacterInputs : MonoBehaviour
     public bool jump;
     public bool evade; // Evade 입력 추가
     public bool isZooming;
+    public float sensitivityQuotinent = 1;
 
     [Header("Mouse Cursor Settings")]
     public bool cursorLocked = true;
@@ -31,6 +35,7 @@ public class CharacterInputs : MonoBehaviour
     private void Start()
     {
         playerInput = GetComponent<PlayerInput>();
+        //inputActionAsset = GetComponent<PlayerInput>().actions;
     }
 
 
@@ -61,7 +66,7 @@ public class CharacterInputs : MonoBehaviour
     {
         if (cursorInputForLook)
         {
-            LookInput(value.Get<Vector2>());
+            LookInput(value.Get<Vector2>() * sensitivityQuotinent);
         }
     }
 
@@ -106,6 +111,23 @@ public class CharacterInputs : MonoBehaviour
     public void OnFire(InputValue value)
     {
         onFireAction?.Invoke();
+    }
+
+    public void OnSensitivityUp(InputValue value)
+    {
+        sensitivityQuotinent += 0.1f;
+
+
+    }
+
+    public void OnSensitivityDown(InputValue value)
+    {
+        sensitivityQuotinent -= 0.1f;
+
+        if (sensitivityQuotinent <= 0f)
+        {
+            sensitivityQuotinent = 0.003f;
+        }
     }
 
 #endif

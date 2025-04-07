@@ -126,6 +126,24 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SensitivityUp"",
+                    ""type"": ""Button"",
+                    ""id"": ""8251cdf9-6f53-4190-88d4-eb6c681334e0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SensitivityDown"",
+                    ""type"": ""Button"",
+                    ""id"": ""eb357617-98ff-4414-b7ee-c73f912791f8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -258,6 +276,28 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2f01f871-d329-44eb-8909-f4d682f243a6"",
+                    ""path"": ""<Keyboard>/pageUp"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SensitivityUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""561a3698-02b4-4ffb-a962-5b5f9d490e4b"",
+                    ""path"": ""<Keyboard>/pageDown"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SensitivityDown"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -507,6 +547,8 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         m_DefaultPlayerMove_Look = m_DefaultPlayerMove.FindAction("Look", throwIfNotFound: true);
         m_DefaultPlayerMove_Zoom = m_DefaultPlayerMove.FindAction("Zoom", throwIfNotFound: true);
         m_DefaultPlayerMove_Jump = m_DefaultPlayerMove.FindAction("Jump", throwIfNotFound: true);
+        m_DefaultPlayerMove_SensitivityUp = m_DefaultPlayerMove.FindAction("SensitivityUp", throwIfNotFound: true);
+        m_DefaultPlayerMove_SensitivityDown = m_DefaultPlayerMove.FindAction("SensitivityDown", throwIfNotFound: true);
         // Zoomed In Player Move
         m_ZoomedInPlayerMove = asset.FindActionMap("Zoomed In Player Move", throwIfNotFound: true);
         m_ZoomedInPlayerMove_Move = m_ZoomedInPlayerMove.FindAction("Move", throwIfNotFound: true);
@@ -599,6 +641,8 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_DefaultPlayerMove_Look;
     private readonly InputAction m_DefaultPlayerMove_Zoom;
     private readonly InputAction m_DefaultPlayerMove_Jump;
+    private readonly InputAction m_DefaultPlayerMove_SensitivityUp;
+    private readonly InputAction m_DefaultPlayerMove_SensitivityDown;
     /// <summary>
     /// Provides access to input actions defined in input action map "Default Player Move".
     /// </summary>
@@ -626,6 +670,14 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "DefaultPlayerMove/Jump".
         /// </summary>
         public InputAction @Jump => m_Wrapper.m_DefaultPlayerMove_Jump;
+        /// <summary>
+        /// Provides access to the underlying input action "DefaultPlayerMove/SensitivityUp".
+        /// </summary>
+        public InputAction @SensitivityUp => m_Wrapper.m_DefaultPlayerMove_SensitivityUp;
+        /// <summary>
+        /// Provides access to the underlying input action "DefaultPlayerMove/SensitivityDown".
+        /// </summary>
+        public InputAction @SensitivityDown => m_Wrapper.m_DefaultPlayerMove_SensitivityDown;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -664,6 +716,12 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @SensitivityUp.started += instance.OnSensitivityUp;
+            @SensitivityUp.performed += instance.OnSensitivityUp;
+            @SensitivityUp.canceled += instance.OnSensitivityUp;
+            @SensitivityDown.started += instance.OnSensitivityDown;
+            @SensitivityDown.performed += instance.OnSensitivityDown;
+            @SensitivityDown.canceled += instance.OnSensitivityDown;
         }
 
         /// <summary>
@@ -687,6 +745,12 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @SensitivityUp.started -= instance.OnSensitivityUp;
+            @SensitivityUp.performed -= instance.OnSensitivityUp;
+            @SensitivityUp.canceled -= instance.OnSensitivityUp;
+            @SensitivityDown.started -= instance.OnSensitivityDown;
+            @SensitivityDown.performed -= instance.OnSensitivityDown;
+            @SensitivityDown.canceled -= instance.OnSensitivityDown;
         }
 
         /// <summary>
@@ -921,6 +985,20 @@ public partial class @ThirdPersonInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnJump(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SensitivityUp" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSensitivityUp(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SensitivityDown" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSensitivityDown(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Zoomed In Player Move" which allows adding and removing callbacks.
