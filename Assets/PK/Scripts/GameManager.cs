@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -126,12 +127,19 @@ public class GameManager : MonoBehaviour
             playerSelf = GameObject.FindGameObjectWithTag("Player");
             if (playerSelf != null)
             {
-                playerSelf.transform.position = resetPos + (Vector3.up * 1.2f);
+                StartCoroutine(setPositionPlayer());
             }
             else
             {
                 Debug.LogError("There are no players");
             }
         }
+    }
+
+    IEnumerator setPositionPlayer()
+    {
+        yield return new WaitForSeconds(1f);
+        playerSelf = GameObject.FindGameObjectWithTag("Player");
+        playerSelf.transform.position = resetPos + (Vector3.up * 1.2f);
     }
 }
